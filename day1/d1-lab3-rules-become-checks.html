@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 3, rules become checks</title>
+<link rel="stylesheet" href="../handout.css">
+<script src="../zoom.js"></script>
+<script>
+/* Marks the page as script-enabled so the chooser shows. With scripts off, every variant stays visible. */
+document.documentElement.className += " js";
+</script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Day 1</p>
+  <h1>Lab 3, rules become checks</h1>
+  <ul class="meta">
+    <li>Length 80 minutes</li>
+  </ul>
+</header>
+
+<form class="chooser" id="chooser" aria-label="Show only my agent and stack">
+  <fieldset>
+    <legend>Agent</legend>
+    <label><input type="radio" name="agent" value="both" checked> Both</label>
+    <label><input type="radio" name="agent" value="claude"> Claude Code</label>
+    <label><input type="radio" name="agent" value="copilot"> GitHub Copilot</label>
+  </fieldset>
+  <fieldset>
+    <legend>Stack</legend>
+    <label><input type="radio" name="stack" value="both" checked> Both</label>
+    <label><input type="radio" name="stack" value="python"> Python</label>
+    <label><input type="radio" name="stack" value="dotnet"> .NET</label>
+  </fieldset>
+</form>
+
+<h2>Goal</h2>
+<p>Two written rules in <code>docs/standards.md</code> become checks that run by themselves: a banned-API rule, a pre-commit hook under 3 seconds, a CI workflow and a boundary check.</p>
+
+<h2>Before you start</h2>
+<ul>
+  <li>Your clone from lab 2, with your agent running in it and <code>scripts\check.ps1</code> passing.<span data-stack="python"> Python: no lab makes a virtual environment. The install line from the machine check put the packages in your user folder, so a new window needs no set up.</span></li>
+  <li>Route C means a local clone with no remote of your own. On route C you skip every <code>git push</code>.</li>
+  <li>When the agent asks to add a package, agree as the Technical Lead. Note each mistake the agent makes on your paper.</li>
+  <li>The lab ends with part 4. The alternatives page follows for about ten minutes.</li>
+  <li>Copy each block from the guide on screen. Do not type it from paper, where long lines wrap.</li>
+</ul>
+
+<h2>Steps</h2>
+
+<h3 class="print-hide">Part 1, the lint rule and the 20 fixes</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 1. </span>Ask for the lint rule, then list what it finds.</p>
+    <p>The written date rule becomes a check that runs by itself and lists each place that breaks it.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Make the date rule in docs/standards.md a Ruff TID251 rule that bans datetime.datetime.strptime and time.strptime. Select only TID251, skip vendor and src/generated, add ruff==0.17.* to requirements-dev.txt and install it. Fix nothing yet.</code></pre>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>python -m ruff check .</code></pre>
+        <p class="note">The last line is <code>Found 20 errors.</code></p>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Make the date rule in docs/standards.md a BannedApiAnalyzers 5.6.0 rule. A root BannedSymbols.txt bans every string overload of Parse, ParseExact, TryParse and TryParseExact on DateOnly and DateTime. Leave out Scheme.Common. Do not build. Fix nothing yet.</code></pre>
+        <p>This command builds outside the repo, so a normal build still fails.</p>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>dotnet build tests/MemberIngestion.UnitTests --no-incremental -p:TreatWarningsAsErrors=false --artifacts-path $env:TEMP\mi-list</code></pre>
+        <p class="note">Near the end: <code>20 Warning(s)</code>.</p>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Ask the agent to fix all 20 in one pass.</p>
+    <p>The agent swaps each banned call for the helper the rule names, so the rule passes without turning warnings off.</p>
+    <p>Do not commit the fix yet. It goes into the first commit of part 2, which runs the new hook. If the agent is still running when part 2 starts, let it run and answer its prompts.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Fix all 20 findings in one pass, in code and in tests, with the helper the rule's message names. Never turn warnings off. Then run the rule and scripts\check.ps1.</code></pre>
+    <p class="note">Both pass. The agent may say it changed tests, which is expected here.</p>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 2, the hook and the CI workflow</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 2. </span>Ask for the pre-commit hook.</p>
+    <p>A pre-commit hook checks the staged files at each commit, and a commit that fails its check stops there. Your first commit in this part holds the fix of part 1 and runs the hook.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <p>Expect a hook that runs the date rule on the staged <code>.py</code> files.</p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add .githooks/pre-commit that runs scripts/pre-commit.ps1 in Windows PowerShell. It runs python -m ruff check --force-exclude on staged .py files only and exits 0 if none. No path guard. Add python -m ruff check . to scripts\check.ps1.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <p>Expect a hook that checks the layout of the staged <code>.cs</code> files. The date rule needs a build, so it waits for the check command.</p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add .githooks/pre-commit that runs scripts/pre-commit.ps1 in Windows PowerShell. It runs dotnet format whitespace --folder --verify-no-changes --include on staged .cs files only and exits 0 if none. No path guard.</code></pre>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Turn the hook on, then commit and time it. Write the seconds on your paper.</p>
+    <p>The hook must run in under 3 seconds, so you time the commit.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git config core.hooksPath .githooks</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add -A; (Measure-Command { git commit -m "Add the date rule, its fixes and a hook" | Out-Host }).TotalSeconds</code></pre>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <p>Over 3 seconds? The check command already runs the Ruff check, so the hook can drop it. Send this, then commit and time again. Still over? Write the time down and go on.</p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>The hook takes more than 3 seconds. Take the Ruff check out of scripts/pre-commit.ps1, because scripts\check.ps1 runs it. Leave only git diff --cached --check in the hook.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <p>Over 3 seconds, which is likely on .NET? The check command can run the layout check in its place. Send this, then commit and time again. Still over? Write the time down and go on.</p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>The hook takes more than 3 seconds. Move the layout check from scripts/pre-commit.ps1 into scripts\check.ps1. Leave only git diff --cached --check in the hook.</code></pre>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Ask for the CI workflow, commit it, and push it on routes A and B. Do not wait for the run.</p>
+    <p>CI runs the check command on GitHub for every pull request and every push to main. Expect <code>.github/workflows/ci.yml</code> with one job named <code>check</code>.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Write .github/workflows/ci.yml: a job named check on windows-latest, for pull requests and pushes to main. Set up Python 3.12 and Java 17, install requirements-dev.txt, run scripts\check.ps1 -Spark.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Write .github/workflows/ci.yml: a job named check on windows-latest, for pull requests and pushes to main. Set up the .NET SDK from global.json, run scripts\check.ps1.</code></pre>
+      </div>
+    </div>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add -A; git commit -m "Add the CI workflow"</code></pre>
+    <p>Routes A and B: push. You look at the run in lab 4.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git push</code></pre>
+    <p>Route C: skip the push. Route C has no CI run, so a pre-push hook takes its place and runs the check command. Send this prompt, then commit the hook.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add .githooks/pre-push that runs scripts\check.ps1.</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add -A; git commit -m "Add a pre-push hook"</code></pre>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 3, codebase-design on one module</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 3. </span>Type <code data-copy="Prompt to paste into the agent">/clear</code>, then run the skill on one module.</p>
+    <p>The skill judges whether a module is deep, with a lot of behaviour behind a small interface, or shallow. It changes no file. Expect one verdict with its reason, in the skill's words.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/codebase-design Assess only the module vendor/scheme_common/dates.py. Deep or shallow, and why, in the skill's words? One assessment, not several designs. Change no file.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/codebase-design Assess only the module vendor/Scheme.Common/Dates. Deep or shallow, and why, in the skill's words? One assessment, not several designs. Change no file.</code></pre>
+      </div>
+    </div>
+    <p class="note">Write one line on your paper: the module, and what the skill found about its depth.</p>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 4, the boundary check</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 4. </span>Add the boundary check. It fails the check command if code breaks the rule in standards.md.</p>
+    <p>The agent adds the package. You paste the contract that states which layers may depend on which.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add import-linter==2.* to requirements-dev.txt and install it.</code></pre>
+        <p>Paste this at the end of <code>pyproject.toml</code>. Leave no blank line after the last <code>]</code>, or a hook that checks blank lines refuses the commit.</p>
+        <pre class="cmd" data-copy="Code to paste into the file"><code>[tool.importlinter]
+root_packages = [
+  "pipeline", "employer_reports",
+  "late_contributions", "reconciliation",
+  "valuation_extract", "member_service",
+  "member_store", "feeds", "generated",
+  "scheme_common",
+]
+
+[[tool.importlinter.contracts]]
+name = "Imports point downwards"
+type = "layers"
+layers = [
+  "pipeline",
+  "employer_reports",
+  "late_contributions | reconciliation | valuation_extract | member_service",
+  "member_store",
+  "feeds",
+  "generated",
+  "scheme_common",
+]</code></pre>
+</div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add NetArchTest.Rules 1.3.2 to the unit test project.</code></pre>
+        <p>Paste this into a new file <code>ArchitectureTests.cs</code> there. Keep the indents and end with a new line.</p>
+        <pre class="cmd" data-copy="Code to paste into the file"><code>using MemberIngestion.Members;
+using NetArchTest.Rules;
+namespace MemberIngestion.UnitTests;
+
+public sealed class ArchitectureTests
+{
+    const string N = "MemberIngestion.";
+    // Known breaks, each with a reason.
+    // Form: "Type -> Namespace".
+    static readonly string[] Known = [];
+    [Theory]
+    [InlineData("Feeds", "Ingestion")]
+    [InlineData("Feeds", "Reports")]
+    [InlineData("Ingestion", "Reports")]
+    [InlineData("Members", "Ingestion")]
+    [InlineData("Members", "Reports")]
+    [InlineData("Members", "Feeds")]
+    public void Points_down(
+        string from, string to)
+    {
+        var r = Types.InAssembly(
+                typeof(Member).Assembly)
+            .That()
+            .ResideInNamespace(N + from)
+            .ShouldNot()
+            .HaveDependencyOn(N + to)
+            .GetResult();
+        var broken =
+            (r.FailingTypeNames ?? [])
+            .Where(t => !Known.Contains(
+                $"{t} -> {to}"));
+        Assert.Empty(broken);
+    }
+}
+</code></pre>
+</div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Run it. It fails on two breaks. Record the break in feeds with its reason, fix the other one, then commit.</p>
+    <p>A known break is recorded with its reason, so the check passes while its fix waits for a change of its own.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>$env:PYTHONPATH = "src;vendor;."; lint-imports</code></pre>
+        <p class="note"><code>Contracts: 0 kept, 1 broken.</code></p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Record feeds._reader -> pipeline.settings in ignore_imports with a comment that gives the reason in words. Fix the other break in the code. Add a step to scripts\check.ps1 that sets PYTHONPATH to src;vendor;. and runs lint-imports, with no python -c code. Then run powershell -ExecutionPolicy Bypass -File scripts\check.ps1 until it ends with exit code 0.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>dotnet test tests/MemberIngestion.UnitTests --filter FullyQualifiedName~ArchitectureTests</code></pre>
+        <p class="note"><code>Failed: 2, Passed: 4</code></p>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Record MemberFeedReader in Known in ArchitectureTests.cs as MemberIngestion.Feeds.MemberFeedReader -> Ingestion, with a comment that gives the reason in words. Fix the other break in the code. Run scripts\check.ps1.</code></pre>
+      </div>
+    </div>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add -A; git commit -m "Add the boundary check"</code></pre>
+    <p>Routes A and B: then push, as in step 5, so CI checks the new commit. Route C: skip the push.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git push</code></pre>
+  </li>
+
+</ol>
+
+<h2>The artefact you leave in the repo</h2>
+<ul>
+  <li data-stack="python">The banned-API rule, in <code>pyproject.toml</code>.</li>
+  <li data-stack="dotnet">The banned-API rule, in <code>BannedSymbols.txt</code> with the two props files.</li>
+  <li><code>.githooks/pre-commit</code>, one fast check that runs in under 3 seconds.</li>
+  <li><code>.github/workflows/ci.yml</code>, a job named <code>check</code> that runs the check command.</li>
+  <li data-stack="python">The boundary check, in <code>pyproject.toml</code>, run by the check command.</li>
+  <li data-stack="dotnet">The boundary check, in <code>ArchitectureTests.cs</code>, run by the check command.</li>
+</ul>
+
+<h2>Done check</h2>
+<div class="done-check">
+  <p>These show that the check passes, the hook is on and the workflow is committed. All routes run the first command. Routes A and B run the second. Route C runs the third.</p>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE; git config core.hooksPath</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git log origin/main --oneline -- .github/workflows/ci.yml</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git log --oneline -- .github/workflows/ci.yml; Test-Path .githooks\pre-push</code></pre>
+  <p class="note">The first ends with <code>0</code> and <code>.githooks</code>. The second shows one line. The third shows one line, then <code>True</code>.<span class="print-only"> Finished early? Stretch goals: <a href="d1-stretch-goals.html">d1-stretch-goals.html</a>.</span></p>
+</div>
+
+<h2>If you are stuck</h2>
+<div class="stuck">
+  <ul>
+    <li data-stack="python">Python finds 22? The rule bans Spark's <code>to_date</code> too. Ban only the two calls in step 1.</li>
+    <li data-stack="dotnet">.NET passes a normal build before the fix? A build ran with warnings off. Run <code data-copy="Command to paste into PowerShell">dotnet build tests/MemberIngestion.UnitTests --no-incremental</code>.</li>
+    <li data-stack="python">Python import step fails with <code>NameError</code>? Tell the agent that Windows PowerShell 5.1 drops double quotes in <code>python -c</code> code.</li>
+  </ul>
+</div>
+
+<div class="done-check print-hide">
+  <p class="step-title">Finished early? Take a stretch goal.</p>
+  <p>The sheet <a id="stretch-link" href="d1-stretch-goals.html?lab=3">d1-stretch-goals.html</a> opens at the two stretch goals for lab 3.</p>
+</div>
+
+<div class="footer print-hide">
+  <p class="step-title">Stuck or finished? Scan for the solution.</p>
+  <svg role="img" aria-label="QR code for the lab 3 solution" width="180" height="180"><g transform="scale(4)"><path fill="#fff" d="M0 0h45v45h-45z"/><path stroke="#000" d="M4 4.5h7m1 0h3m1 0h1m1 0h4m1 0h2m1 0h1m5 0h1m1 0h7m-37 1h1m5 0h1m4 0h5m1 0h2m1 0h3m1 0h3m3 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m1 0h1m2 0h1m1 0h3m3 0h2m1 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h2m2 0h1m2 0h2m1 0h1m1 0h2m3 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m3 0h1m1 0h1m2 0h2m1 0h1m3 0h1m2 0h2m1 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h1m1 0h5m2 0h2m1 0h3m1 0h2m4 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h2m2 0h2m1 0h2m5 0h2m-28 1h1m1 0h1m3 0h2m2 0h4m3 0h1m2 0h1m1 0h1m1 0h1m1 0h1m1 0h1m2 0h1m2 0h1m1 0h1m-34 1h3m2 0h1m1 0h4m3 0h1m2 0h2m1 0h2m2 0h2m1 0h1m2 0h4m-37 1h7m5 0h4m1 0h1m2 0h1m2 0h1m3 0h1m2 0h1m2 0h2m1 0h1m-37 1h1m2 0h2m2 0h4m3 0h1m3 0h3m1 0h1m3 0h1m6 0h1m-32 1h1m3 0h1m3 0h1m1 0h5m3 0h1m3 0h1m2 0h1m2 0h2m4 0h1m-37 1h3m1 0h2m1 0h1m1 0h1m4 0h2m3 0h7m1 0h2m1 0h2m1 0h1m2 0h1m-35 1h2m1 0h5m3 0h3m1 0h4m2 0h3m1 0h2m4 0h2m1 0h1m-37 1h1m1 0h1m1 0h1m2 0h2m4 0h2m1 0h1m1 0h1m1 0h1m2 0h2m1 0h8m1 0h2m-37 1h2m1 0h1m1 0h3m5 0h1m1 0h4m1 0h1m3 0h1m3 0h1m1 0h1m-30 1h2m5 0h1m3 0h1m3 0h1m1 0h1m4 0h6m1 0h2m1 0h1m1 0h2m-37 1h1m1 0h2m1 0h2m1 0h2m1 0h1m2 0h1m1 0h1m1 0h3m2 0h9m2 0h1m1 0h1m-37 1h1m3 0h1m2 0h1m1 0h1m3 0h4m1 0h1m3 0h1m1 0h1m1 0h1m1 0h2m1 0h3m-32 1h2m2 0h1m3 0h2m1 0h1m2 0h1m2 0h2m2 0h2m3 0h1m1 0h2m3 0h1m-36 1h3m4 0h1m1 0h4m2 0h3m1 0h3m1 0h1m2 0h3m1 0h1m5 0h1m-33 1h3m1 0h3m2 0h3m3 0h6m1 0h2m2 0h1m2 0h2m1 0h1m-35 1h1m4 0h1m1 0h1m2 0h2m1 0h1m1 0h1m1 0h2m2 0h1m2 0h1m4 0h3m1 0h2m-37 1h1m1 0h1m3 0h2m1 0h1m1 0h1m2 0h2m1 0h1m1 0h2m2 0h1m3 0h5m3 0h2m-34 1h1m4 0h4m5 0h1m3 0h4m2 0h5m1 0h1m2 0h1m-37 1h4m2 0h1m1 0h2m2 0h1m1 0h2m3 0h2m2 0h1m1 0h1m1 0h1m5 0h2m1 0h1m-34 1h2m2 0h1m4 0h1m5 0h1m1 0h1m1 0h1m1 0h1m3 0h1m1 0h4m1 0h1m-36 1h2m1 0h1m2 0h1m1 0h1m1 0h4m1 0h1m4 0h1m2 0h2m3 0h6m1 0h1m-28 1h1m2 0h2m1 0h3m1 0h3m1 0h4m2 0h1m3 0h1m2 0h2m-37 1h7m1 0h2m4 0h6m1 0h1m1 0h1m4 0h1m1 0h1m1 0h1m3 0h1m-37 1h1m5 0h1m2 0h2m4 0h1m2 0h2m4 0h1m1 0h3m3 0h1m2 0h1m-36 1h1m1 0h3m1 0h1m3 0h1m1 0h1m2 0h4m1 0h1m2 0h1m3 0h6m-33 1h1m1 0h3m1 0h1m3 0h1m2 0h2m1 0h1m1 0h3m2 0h3m1 0h3m2 0h1m1 0h1m-35 1h1m1 0h3m1 0h1m1 0h2m4 0h1m1 0h2m1 0h1m2 0h7m2 0h2m1 0h1m1 0h1m-37 1h1m5 0h1m4 0h1m1 0h1m1 0h2m1 0h1m1 0h1m3 0h1m3 0h1m3 0h2m-34 1h7m1 0h1m3 0h3m5 0h1m6 0h2m1 0h2m1 0h1m2 0h1"/></g></svg>
+</div>
+
+</main>
+
+<script>
+/* Lets the learner hide the agent and the stack they do not use, and remembers the choice. */
+(function () {
+  var root = document.documentElement;
+  var key = "handout-choice";
+  var form = document.getElementById("chooser");
+  if (!form) { return; }
+  var all = ["claude", "copilot", "python", "dotnet"];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
+  }
+  function save(c) {
+    try { localStorage.setItem(key, JSON.stringify(c)); } catch (e) { /* storage may be blocked */ }
+  }
+  /* A URL such as ?stack=python or ?agent=claude sets the starting choice. It wins over the stored choice. */
+  function param(name, values) {
+    var v = (new RegExp("[?&]" + name + "=([^&#]*)").exec(location.search) || [])[1];
+    return values.indexOf(v) < 0 ? null : v;
+  }
+  /* The stretch goals link carries the lab and the agent and stack the learner chose. */
+  function link(c) {
+    var a = document.getElementById("stretch-link");
+    if (!a) { return; }
+    var href = a.getAttribute("href").split("&")[0];
+    ["agent", "stack"].forEach(function (g) {
+      if (c[g] && c[g] !== "both") { href += "&" + g + "=" + c[g]; }
+    });
+    a.setAttribute("href", href);
+  }
+  function apply(c) {
+    all.forEach(function (n) { root.classList.remove("hide-" + n); });
+    if (c.agent && c.agent !== "both") { root.classList.add("hide-" + (c.agent === "claude" ? "copilot" : "claude")); }
+    if (c.stack && c.stack !== "both") { root.classList.add("hide-" + (c.stack === "python" ? "dotnet" : "python")); }
+    ["agent", "stack"].forEach(function (g) {
+      var v = c[g] || "both";
+      var el = form.querySelector('input[name="' + g + '"][value="' + v + '"]');
+      if (el) { el.checked = true; }
+    });
+    link(c);
+  }
+
+  var choice = load();
+  [["agent", ["claude", "copilot"]], ["stack", ["python", "dotnet"]]].forEach(function (p) {
+    var v = param(p[0], p[1]);
+    if (v) { choice[p[0]] = v; }
+  });
+  apply(choice);
+  form.addEventListener("change", function (e) {
+    choice[e.target.name] = e.target.value;
+    save(choice);
+    apply(choice);
+  });
+})();
+</script>
+</body>
+</html>

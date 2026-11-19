@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill card: setup-matt-pocock-skills</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Skill card</p>
+  <h1>setup-matt-pocock-skills</h1>
+  <ul class="meta">
+    <li>Learning outcome 1: Make a repository agent-ready: one-command checks, skills at project scope, AGENTS.md as pointers, a glossary and a standards file.</li>
+  </ul>
+</header>
+
+<h2>The pain point</h2>
+<p>The skills do not know your tracker, your labels or your doc layout. Matt Pocock says: "people ask me all the time, how do I make my skills work with Jira, work with beads, work with linear?" Without setup the skills guess where issues go and apply labels your tracker does not have.</p>
+
+<h2>What the skill does</h2>
+<p>It records for one repo where issues live, what the triage labels are called and where the domain docs sit. It writes these as markdown files under <code>docs/agents/</code>, so each repo has its own setup.</p>
+
+<h2>When to skip it</h2>
+<ul>
+  <li>You work in a repo that is already set up, and the other skills already find your issues and labels. The skill is for a repo that has not been set up yet, once per repo.</li>
+  <li>You want to change how the other skills behave, such as their question style or tone. The skill is for the tracker, the labels and the doc layout only.</li>
+</ul>
+
+<h2>Where the course uses it</h2>
+<ul>
+  <li>Day 1, 10:45, lab 2, one-command build and test. You run it once, in your stack repo.</li>
+</ul>
+
+</main>
+</body>
+</html>

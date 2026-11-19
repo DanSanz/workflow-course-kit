@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill map</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Handout</p>
+  <h1>Skill map</h1>
+  <ul class="meta">
+    <li>19 skills, Days 1 to 3</li>
+  </ul>
+</header>
+
+<p>This map shows the 19 skills the course teaches. An arrow means one skill calls another while it runs. A dashed line means a skill needs the config files that <code>setup-matt-pocock-skills</code> writes, and tells you to run that skill first. The skills on the <a href="watch-list.html">watch list</a> are left out, with their arrows.</p>
+
+<h2>How to read it</h2>
+<ul>
+  <li><svg width="34" height="18" viewBox="0 0 34 18" aria-hidden="true"><rect x="1" y="1" width="32" height="16" rx="3" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/></svg> A Day 1 skill.</li>
+  <li><svg width="34" height="18" viewBox="0 0 34 18" aria-hidden="true"><rect x="1" y="1" width="32" height="16" rx="3" fill="#ffffff" stroke="#566170" stroke-width="1.25"/></svg> A Day 2 or Day 3 skill.</li>
+  <li><svg width="34" height="18" viewBox="0 0 34 18" aria-hidden="true"><path d="M1,9 H33" stroke="#1c2430" stroke-width="1.6" marker-end="url(#k-call)"/><defs><marker id="k-call" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1c2430"/></marker></defs></svg> Calls the other skill while it runs.</li>
+  <li><svg width="34" height="18" viewBox="0 0 34 18" aria-hidden="true"><path d="M4,9 H33" stroke="#a4491f" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#k-cfg)"/><circle cx="4" cy="9" r="3.5" fill="#a4491f"/><defs><marker id="k-cfg" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a4491f"/></marker></defs></svg> Needs the config files from <code>setup-matt-pocock-skills</code>.</li>
+  <li>Each box gives the day and start time of the session that teaches the skill. &quot;Only you start it&quot; means you type its name. &quot;You or the agent&quot; means the agent can also start it when the task fits.</li>
+</ul>
+
+<h2>The map</h2>
+<svg viewBox="0 0 400 904" width="100%" height="904" preserveAspectRatio="xMidYMin meet" role="img" aria-labelledby="map-title map-desc" font-family="Segoe UI, system-ui, -apple-system, Arial, sans-serif" color="#1c2430">
+<title id="map-title">Map of which course skills call which others</title>
+<desc id="map-desc">grill-with-docs calls grilling. grill-with-docs calls domain-modeling. triage calls grilling. triage calls domain-modeling. improve-codebase-architecture calls grilling. improve-codebase-architecture calls domain-modeling. improve-codebase-architecture calls codebase-design. implement calls tdd. implement calls code-review. implement-spec calls tdd. implement-spec calls code-review. retro calls writing-for-agents. tdd calls codebase-design. triage, implement-spec, code-review, to-spec and to-tickets need the config files that setup-matt-pocock-skills writes. prototype, handoff, diagnosing-bugs and pr have no call in or out and need no config files.</desc>
+<defs>
+<marker id="call" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1c2430"/></marker>
+<marker id="cfg" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="9" markerHeight="9" markerUnits="userSpaceOnUse" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#a4491f"/></marker>
+</defs>
+<text x="16" y="17" font-size="14" font-weight="700" fill="#566170">Calls other skills</text>
+<text x="234" y="17" font-size="14" font-weight="700" fill="#566170">Called by other skills</text>
+<g fill="none" stroke="#a4491f" stroke-width="2" stroke-dasharray="6 4">
+<path d="M16,135 H6 V678 H94" marker-end="url(#cfg)"/>
+<path d="M16,397 H6"/>
+<path d="M384,397 H394 V678 H306" marker-end="url(#cfg)"/>
+<path d="M140,619 V645" marker-end="url(#cfg)"/>
+<path d="M260,619 V645" marker-end="url(#cfg)"/>
+</g>
+<g fill="none" stroke="#1c2430" stroke-width="1.6">
+<path d="M166,47 H233" marker-end="url(#call)"/>
+<path d="M166,71 C199.5,71 199.5,121 233,121" marker-end="url(#call)"/>
+<path d="M166,125 C199.5,125 199.5,61 233,61" marker-end="url(#call)"/>
+<path d="M166,145 C199.5,145 199.5,135 233,135" marker-end="url(#call)"/>
+<path d="M166,194 C199.5,194 199.5,75 233,75" marker-end="url(#call)"/>
+<path d="M166,212 C199.5,212 199.5,149 233,149" marker-end="url(#call)"/>
+<path d="M166,232 C199.5,232 199.5,222 233,222" marker-end="url(#call)"/>
+<path d="M166,312 H233" marker-end="url(#call)"/>
+<path d="M166,334 C199.5,334 199.5,390 233,390" marker-end="url(#call)"/>
+<path d="M166,382 C199.5,382 199.5,334 233,334" marker-end="url(#call)"/>
+<path d="M166,406 C199.5,406 199.5,410 233,410" marker-end="url(#call)"/>
+<path d="M166,473 H233" marker-end="url(#call)"/>
+<path d="M309,290 V244" marker-end="url(#call)"/>
+</g>
+<line x1="16" y1="524" x2="384" y2="524" stroke="#d5dbe3" stroke-width="1.5"/>
+<text x="200" y="545" text-anchor="middle" font-size="14" font-weight="700" fill="#566170">No call in or out</text>
+<rect x="16" y="28" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="49" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">grill-with-docs</text>
+<text x="91.0" y="67" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 09:00</text>
+<text x="91.0" y="84" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="16" y="104" width="150" height="63" rx="5" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/>
+<text x="91.0" y="125" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">triage</text>
+<text x="91.0" y="143" text-anchor="middle" font-size="14" fill="#ffffff">Day 1, 15:00</text>
+<text x="91.0" y="160" text-anchor="middle" font-size="14" fill="#ffffff">Only you start it</text>
+<rect x="16" y="180" width="150" height="80" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="201" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">improve-codebase-</text>
+<text x="91.0" y="218" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">architecture</text>
+<text x="91.0" y="236" text-anchor="middle" font-size="14" fill="currentColor">Day 3, 13:15</text>
+<text x="91.0" y="253" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="16" y="290" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="311" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">implement</text>
+<text x="91.0" y="329" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 13:15</text>
+<text x="91.0" y="346" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="16" y="366" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="387" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">implement-spec</text>
+<text x="91.0" y="405" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 15:00</text>
+<text x="91.0" y="422" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="16" y="442" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="463" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">retro</text>
+<text x="91.0" y="481" text-anchor="middle" font-size="14" fill="currentColor">Day 3, 13:15</text>
+<text x="91.0" y="498" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="234" y="28" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="49" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">grilling</text>
+<text x="309.0" y="67" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 09:00</text>
+<text x="309.0" y="84" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<rect x="234" y="104" width="150" height="63" rx="5" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/>
+<text x="309.0" y="125" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">domain-modeling</text>
+<text x="309.0" y="143" text-anchor="middle" font-size="14" fill="#ffffff">Day 1, 10:45</text>
+<text x="309.0" y="160" text-anchor="middle" font-size="14" fill="#ffffff">You or the agent</text>
+<rect x="234" y="180" width="150" height="63" rx="5" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/>
+<text x="309.0" y="201" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">codebase-design</text>
+<text x="309.0" y="219" text-anchor="middle" font-size="14" fill="#ffffff">Day 1, 13:15</text>
+<text x="309.0" y="236" text-anchor="middle" font-size="14" fill="#ffffff">You or the agent</text>
+<rect x="234" y="290" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="311" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">tdd</text>
+<text x="309.0" y="329" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 13:15</text>
+<text x="309.0" y="346" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<rect x="234" y="366" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="387" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">code-review</text>
+<text x="309.0" y="405" text-anchor="middle" font-size="14" fill="currentColor">Day 3, 09:00</text>
+<text x="309.0" y="422" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<rect x="234" y="442" width="150" height="63" rx="5" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/>
+<text x="309.0" y="463" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">writing-for-agents</text>
+<text x="309.0" y="481" text-anchor="middle" font-size="14" fill="#ffffff">Day 1, 10:45</text>
+<text x="309.0" y="498" text-anchor="middle" font-size="14" fill="#ffffff">You or the agent</text>
+<rect x="16" y="556" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="577" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">to-spec</text>
+<text x="91.0" y="595" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 10:45</text>
+<text x="91.0" y="612" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="234" y="556" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="577" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">to-tickets</text>
+<text x="309.0" y="595" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 10:45</text>
+<text x="309.0" y="612" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="95" y="646" width="210" height="63" rx="5" fill="#1d5fa8" stroke="#1d5fa8" stroke-width="2"/>
+<text x="200.0" y="667" text-anchor="middle" font-size="14.5" font-weight="700" fill="#ffffff">setup-matt-pocock-skills</text>
+<text x="200.0" y="685" text-anchor="middle" font-size="14" fill="#ffffff">Day 1, 10:45</text>
+<text x="200.0" y="702" text-anchor="middle" font-size="14" fill="#ffffff">Only you start it</text>
+<rect x="16" y="736" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="757" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">prototype</text>
+<text x="91.0" y="775" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 10:45</text>
+<text x="91.0" y="792" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<rect x="234" y="736" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="757" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">handoff</text>
+<text x="309.0" y="775" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 13:15</text>
+<text x="309.0" y="792" text-anchor="middle" font-size="14" fill="currentColor">Only you start it</text>
+<rect x="16" y="812" width="150" height="63" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="91.0" y="833" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">diagnosing-bugs</text>
+<text x="91.0" y="851" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 15:00</text>
+<text x="91.0" y="868" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<rect x="234" y="812" width="150" height="80" rx="5" fill="#ffffff" stroke="#566170" stroke-width="1.25"/>
+<text x="309.0" y="833" text-anchor="middle" font-size="14.5" font-weight="700" fill="currentColor">pr</text>
+<text x="309.0" y="851" text-anchor="middle" font-size="14" fill="currentColor">Day 2, 15:00</text>
+<text x="309.0" y="868" text-anchor="middle" font-size="14" fill="currentColor">Day 3, 09:00</text>
+<text x="309.0" y="885" text-anchor="middle" font-size="14" fill="currentColor">You or the agent</text>
+<g fill="#a4491f">
+<circle cx="16" cy="135" r="3.5"/>
+<circle cx="16" cy="397" r="3.5"/>
+<circle cx="384" cy="397" r="3.5"/>
+<circle cx="140" cy="619" r="3.5"/>
+<circle cx="260" cy="619" r="3.5"/>
+</g>
+</svg>
+
+<h2>What the map tells you</h2>
+<ul>
+  <li>A few skills carry the rest. <code>grilling</code> and <code>domain-modeling</code> are each called by three skills. <code>codebase-design</code>, <code>tdd</code> and <code>code-review</code> are each called by two.</li>
+  <li>A skill that only you can start is never called by another skill. No solid arrow ends at one. You type those skills yourself.</li>
+  <li>Day 1 skills come back later. <code>domain-modeling</code> runs inside <code>grill-with-docs</code> on Day 2 and <code>improve-codebase-architecture</code> on Day 3. <code>codebase-design</code> runs inside <code>tdd</code> on Day 2 and <code>improve-codebase-architecture</code> on Day 3. <code>writing-for-agents</code> runs inside <code>retro</code> on Day 3. The config files from <code>setup-matt-pocock-skills</code> are needed again on Day 2 and Day 3.</li>
+</ul>
+
+<p class="footer">Source: the skills repo github.com/mattpocock/skills at commit 5863806. Each arrow and each dashed line traces to a line in a SKILL.md file at that commit.</p>
+
+</main>
+</body>
+</html>

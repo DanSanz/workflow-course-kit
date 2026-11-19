@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 2, one-command build and test</title>
+<link rel="stylesheet" href="../handout.css">
+<script src="../zoom.js"></script>
+<script>
+/* Marks the page as script-enabled so the chooser shows. With scripts off, every variant stays visible. */
+document.documentElement.className += " js";
+</script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Day 1</p>
+  <h1>Lab 2, one-command build and test</h1>
+  <ul class="meta">
+    <li>Length 90 minutes</li>
+  </ul>
+</header>
+
+<form class="chooser" id="chooser" aria-label="Show only my agent and stack">
+  <fieldset>
+    <legend>Agent</legend>
+    <label><input type="radio" name="agent" value="both" checked> Both</label>
+    <label><input type="radio" name="agent" value="claude"> Claude Code</label>
+    <label><input type="radio" name="agent" value="copilot"> GitHub Copilot</label>
+  </fieldset>
+  <fieldset>
+    <legend>Stack</legend>
+    <label><input type="radio" name="stack" value="both" checked> Both</label>
+    <label><input type="radio" name="stack" value="python"> Python</label>
+    <label><input type="radio" name="stack" value="dotnet"> .NET</label>
+  </fieldset>
+</form>
+
+<h2>Goal</h2>
+<p>Make your repo ready for an agent, with the four artefacts listed below.</p>
+
+<h2>Before you start</h2>
+<ul>
+  <li>Your lab 1 clone in PowerShell, your route and paper. In VS Code, use Copilot CLI for this lab.</li>
+</ul>
+
+<h2>Steps</h2>
+
+<h3 class="print-hide">Part 1, the check command</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 1. </span>Ask for the check command. Allow the build and test commands it asks to run.</p>
+    <p>One command that builds the code and runs the fast tests lets you and the agent check every change the same way. Expect a script that stops at the first failure and exits with that code.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Write scripts\check.ps1 for Windows PowerShell 5.1. It builds the code and runs the unit and module tests. It stops at the first failure and exits with that code, or 0 when all pass. Leave out the acceptance tests. Run tests/spark only with a -Spark switch.</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Write scripts\check.ps1 for Windows PowerShell 5.1. It builds src/MemberIngestion.Job, then runs the tests in tests/MemberIngestion.UnitTests and tests/MemberIngestion.ModuleTests. It stops at the first failure and exits with that code, or 0 when all pass. Do not build the solution or the acceptance tests.</code></pre>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Run it yourself, then let the agent break a test and restore it. You see 0, then not 0, then 0.</p>
+    <p>A broken test shows that the check fails when a test fails, and passes again once the test is restored.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>Break one assertion in a unit test on purpose. Run scripts\check.ps1 and tell me its exit code. Then restore the test with git restore and run the check again.</code></pre>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 2, the setup skill</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 2. </span>Type <code data-copy="Prompt to paste into the agent">/clear</code>, then run the setup skill and answer its three questions.</p>
+    <p>The skills do not know your tracker, your labels or your doc layout. This skill records them in three files under <code>docs/agents/</code>.</p>
+    <p>Pick GitHub on routes A and B or local markdown on route C, the default labels, AGENTS.md whatever the skill suggests, and origin, your own repo, for issues. On A and B, add the labels anyway, because the skill may make only four of the five.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/setup-matt-pocock-skills</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>"needs-triage","needs-info","ready-for-agent","ready-for-human","wontfix" | % { gh label create $_ --force }</code></pre>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 3, pointers in AGENTS.md</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 3. </span>Type <code data-copy="Prompt to paste into the agent">/clear</code> and ask for pointers. Keep the GLOSSARY.md pointer for part 5.</p>
+    <p>Pointers keep AGENTS.md short. Each fact stays in its own file, and the pointer sends the agent there in one step. Expect an AGENTS.md of about 20 lines, with the pointers above the Agent skills block.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/writing-for-agents Extend AGENTS.md with pointers, not prose: run scripts\check.ps1 to build and test, the standards are in docs/standards.md, the runbook is docs/runbook.md, the domain terms are in GLOSSARY.md. Say the README test command fails. Keep the Agent skills block.</code></pre>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 4, the rule about feed dates</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 4. </span>Find the rule about feed dates in <code>docs/standards.md</code>, and check that AGENTS.md points to the file. You are done when you can name the rule.</p>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">The question before the glossary</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title">Stop with the trainer, before the glossary. Save your stack's question outside the repo.</p>
+    <p>You ask the agent this question now and again after the glossary, then compare the names in the two answers. The command saves it in <code>C:\course\question.txt</code>.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>Set-Content C:\course\question.txt 'An employer pays its September contributions for one payroll on 30 October. It has not paid a second payroll at all. A third row has a payment date that cannot be read. What does tonight''s contributions run report, and to whom? Answer in plain words.'</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>Set-Content C:\course\question.txt 'An employer sends its November member file. Two people in it started work this month. One row has one more column than the contract allows. What does tonight''s job do with the file, and what do Employer Relations get? Answer in plain words.'</code></pre>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">Ask it in a new session and save the answer.</p>
+    <p>The answer in <code>before.txt</code> shows the names the agent uses before the glossary exists.</p>
+    <div class="variants">
+      <div class="variant claude" data-agent="claude">
+        <span class="label">Claude Code</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>claude -p (gc C:\course\question.txt -Raw) > C:\course\before.txt</code></pre>
+      </div>
+      <div class="variant copilot" data-agent="copilot">
+        <span class="label">GitHub Copilot</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>copilot -p (gc C:\course\question.txt -Raw) -s > C:\course\before.txt</code></pre>
+      </div>
+    </div>
+    <p class="note">The answer has no right wording. Mark the names it uses for employers, files, rows and members.</p>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 5, the glossary</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 5. </span>Type <code data-copy="Prompt to paste into the agent">/clear</code>, then start the glossary.</p>
+    <p>A glossary gives you and the agent one word for each thing in the repo, so the agent's output drifts less.</p>
+    <p>The skill may write 10 terms, then ask questions. Answer as the code works today, in its words, and leave out what it lacks. Then type <code data-copy="Prompt to paste into the agent">stop here</code>.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/domain-modeling Start GLOSSARY.md with the 10 core terms of this repo. Look for things that the code and the docs call by several names. Challenge me where a term is fuzzy.</code></pre>
+    <p class="note">Check two definitions against the code.</p>
+    <p>Late in this part, redo step 7 but save to <code>after.txt</code>. Comparing the two answers shows whether the glossary changes the names the agent uses.</p>
+    <div class="variants">
+      <div class="variant claude" data-agent="claude">
+        <span class="label">Claude Code</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>claude -p (gc C:\course\question.txt -Raw) > C:\course\after.txt</code></pre>
+      </div>
+      <div class="variant copilot" data-agent="copilot">
+        <span class="label">GitHub Copilot</span>
+        <pre class="cmd" data-copy="Command to paste into PowerShell"><code>copilot -p (gc C:\course\question.txt -Raw) -s > C:\course\after.txt</code></pre>
+      </div>
+    </div>
+    <p class="note">Read both, and note the names each uses for the same things. Count your glossary's terms in the second. If you see no change, do nothing.</p>
+  </li>
+
+</ol>
+
+<h2>The artefact you leave in the repo</h2>
+<ul>
+  <li>The check command <code>scripts\check.ps1</code>, which builds the code and runs the fast tests.</li>
+  <li>The skills configuration in <code>docs/agents/</code>, which is <code>issue-tracker.md</code>, <code>triage-labels.md</code> and <code>domain.md</code>.</li>
+  <li>A short <code>AGENTS.md</code> with the Agent skills block and pointers to the check, standards, runbook and glossary.</li>
+  <li><code>GLOSSARY.md</code> with at least 10 terms, each with a meaning and the names to avoid.</li>
+</ul>
+
+<h2>Done check</h2>
+<div class="done-check">
+  <p>Run both in the repo root. They check the four artefacts and the two answer files.</p>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>"Agent skills","check.ps1","standards","runbook","GLOSSARY" | % { [bool](sls $_ AGENTS.md) }</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>(dir docs\agents).Count; (gc AGENTS.md).Count; (sls "^\*\*" GLOSSARY.md).Count; Test-Path C:\course\before.txt, C:\course\after.txt</code></pre>
+  <p class="note">The check from step 2 ends with <code>0</code>. You see five <code>True</code>, then 3, under 40, 10 or more, and two <code>True</code>. On routes A and B, <code data-copy="Command to paste into PowerShell">gh label list</code> shows the five labels.<span class="print-only"> Finished early? Stretch goals: <a href="d1-stretch-goals.html">d1-stretch-goals.html</a>.</span></p>
+</div>
+
+<h2>If you are stuck</h2>
+<div class="stuck">
+  <ul>
+    <li>If the agent does not know what AGENTS.md says, run <code data-copy="Command to paste into PowerShell">Set-Content CLAUDE.md '@AGENTS.md'</code>.</li>
+  </ul>
+</div>
+
+<div class="done-check print-hide">
+  <p class="step-title">Finished early? Take a stretch goal.</p>
+  <p>The sheet <a id="stretch-link" href="d1-stretch-goals.html?lab=2">d1-stretch-goals.html</a> opens at the two stretch goals for lab 2.</p>
+</div>
+
+<div class="footer print-hide">
+  <p class="step-title">Stuck or finished? Scan for the solution.</p>
+  <svg role="img" aria-label="QR code for the lab 2 solution" width="180" height="180"><g transform="scale(4)"><path fill="#fff" d="M0 0h45v45h-45z"/><path stroke="#000" d="M4 4.5h7m1 0h1m1 0h1m3 0h1m1 0h1m2 0h3m1 0h1m3 0h1m2 0h7m-37 1h1m5 0h1m4 0h1m3 0h1m1 0h1m1 0h1m1 0h2m7 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m2 0h5m3 0h2m2 0h1m2 0h1m3 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m2 0h2m1 0h1m3 0h1m1 0h1m2 0h4m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h2m1 0h3m3 0h2m2 0h1m1 0h1m1 0h3m2 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h4m1 0h1m3 0h1m1 0h1m1 0h2m3 0h1m3 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-29 1h1m1 0h3m2 0h1m3 0h5m4 0h1m-29 1h1m3 0h1m1 0h5m1 0h1m2 0h2m3 0h2m1 0h2m1 0h2m1 0h5m2 0h1m-37 1h2m1 0h2m2 0h2m2 0h1m2 0h1m2 0h3m1 0h1m1 0h1m1 0h4m2 0h5m-32 1h3m5 0h1m2 0h1m1 0h3m3 0h5m3 0h4m-35 1h1m2 0h1m1 0h1m5 0h1m2 0h8m1 0h1m2 0h4m4 0h2m-33 1h4m2 0h1m2 0h3m2 0h1m2 0h5m3 0h4m1 0h4m-37 1h1m4 0h1m2 0h1m3 0h2m1 0h1m2 0h1m2 0h3m2 0h3m3 0h2m-34 1h2m1 0h2m1 0h1m2 0h1m2 0h2m1 0h1m1 0h1m5 0h1m2 0h3m1 0h5m-33 1h2m1 0h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h2m1 0h3m1 0h1m1 0h1m3 0h3m1 0h1m1 0h1m-33 1h1m1 0h2m1 0h1m1 0h1m2 0h1m3 0h1m1 0h5m2 0h1m1 0h2m2 0h3m-36 1h1m1 0h2m3 0h2m1 0h1m1 0h3m1 0h1m2 0h2m2 0h1m3 0h2m3 0h2m1 0h1m-35 1h3m1 0h2m1 0h2m1 0h3m2 0h1m6 0h1m3 0h3m2 0h1m1 0h1m-35 1h1m1 0h1m2 0h1m1 0h1m2 0h2m1 0h2m2 0h2m2 0h1m1 0h2m1 0h2m3 0h2m1 0h2m-32 1h4m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h4m1 0h1m2 0h1m1 0h3m1 0h2m-35 1h1m7 0h4m1 0h6m2 0h1m1 0h3m1 0h2m2 0h2m-32 1h2m3 0h2m1 0h1m2 0h1m2 0h1m2 0h1m2 0h3m1 0h1m1 0h1m3 0h4m-35 1h4m3 0h1m2 0h3m3 0h1m2 0h4m3 0h4m1 0h2m1 0h1m1 0h1m-36 1h2m1 0h4m2 0h1m1 0h3m1 0h1m2 0h4m7 0h2m1 0h2m1 0h1m-37 1h1m1 0h1m4 0h1m1 0h1m1 0h1m1 0h2m2 0h7m1 0h5m2 0h2m-31 1h1m2 0h2m1 0h1m2 0h2m1 0h1m2 0h1m4 0h2m1 0h2m2 0h5m-33 1h2m1 0h1m1 0h5m3 0h4m1 0h2m1 0h2m2 0h1m1 0h4m1 0h1m-35 1h2m2 0h3m1 0h2m1 0h3m2 0h2m2 0h3m1 0h1m2 0h6m1 0h1m-27 1h2m1 0h1m3 0h2m5 0h2m2 0h1m1 0h1m3 0h1m2 0h1m-36 1h7m1 0h1m1 0h1m1 0h2m1 0h3m2 0h2m1 0h4m1 0h1m1 0h1m1 0h1m-33 1h1m5 0h1m3 0h2m4 0h4m1 0h4m1 0h1m1 0h1m3 0h3m-35 1h1m1 0h3m1 0h1m1 0h1m1 0h2m6 0h1m1 0h3m5 0h8m-36 1h1m1 0h3m1 0h1m3 0h3m1 0h1m1 0h1m6 0h1m2 0h6m2 0h1m1 0h1m-37 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h1m2 0h3m1 0h1m1 0h2m3 0h2m1 0h1m3 0h1m-35 1h1m5 0h1m2 0h2m1 0h2m3 0h2m1 0h5m2 0h1m1 0h1m2 0h1m1 0h2m-36 1h7m1 0h10m2 0h4m5 0h3m2 0h3"/></g></svg>
+</div>
+
+</main>
+
+<script>
+/* Lets the learner hide the agent and the stack they do not use, and remembers the choice. */
+(function () {
+  var root = document.documentElement;
+  var key = "handout-choice";
+  var form = document.getElementById("chooser");
+  if (!form) { return; }
+  var all = ["claude", "copilot", "python", "dotnet"];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
+  }
+  function save(c) {
+    try { localStorage.setItem(key, JSON.stringify(c)); } catch (e) { /* storage may be blocked */ }
+  }
+  /* A URL such as ?stack=python or ?agent=claude sets the starting choice. It wins over the stored choice. */
+  function param(name, values) {
+    var v = (new RegExp("[?&]" + name + "=([^&#]*)").exec(location.search) || [])[1];
+    return values.indexOf(v) < 0 ? null : v;
+  }
+  /* The stretch goals link carries the lab and the agent and stack the learner chose. */
+  function link(c) {
+    var a = document.getElementById("stretch-link");
+    if (!a) { return; }
+    var href = a.getAttribute("href").split("&")[0];
+    ["agent", "stack"].forEach(function (g) {
+      if (c[g] && c[g] !== "both") { href += "&" + g + "=" + c[g]; }
+    });
+    a.setAttribute("href", href);
+  }
+  function apply(c) {
+    all.forEach(function (n) { root.classList.remove("hide-" + n); });
+    if (c.agent && c.agent !== "both") { root.classList.add("hide-" + (c.agent === "claude" ? "copilot" : "claude")); }
+    if (c.stack && c.stack !== "both") { root.classList.add("hide-" + (c.stack === "python" ? "dotnet" : "python")); }
+    ["agent", "stack"].forEach(function (g) {
+      var v = c[g] || "both";
+      var el = form.querySelector('input[name="' + g + '"][value="' + v + '"]');
+      if (el) { el.checked = true; }
+    });
+    link(c);
+  }
+
+  var choice = load();
+  [["agent", ["claude", "copilot"]], ["stack", ["python", "dotnet"]]].forEach(function (p) {
+    var v = param(p[0], p[1]);
+    if (v) { choice[p[0]] = v; }
+  });
+  apply(choice);
+  form.addEventListener("change", function (e) {
+    choice[e.target.name] = e.target.value;
+    save(choice);
+    apply(choice);
+  });
+})();
+</script>
+</body>
+</html>

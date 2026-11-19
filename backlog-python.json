@@ -1,0 +1,95 @@
+{
+  "stack": "python",
+  "issues": [
+    {
+      "id": "CP-01",
+      "title": "member load fell over last night??",
+      "body": "on call again. this was the last thing in the nightly log for the member job:\n\n```\nValueError: salary for member M940217 is not a decimal\n```\n\nnothing after it. there were three more employer files in the list and i dont think they went in. reran by hand this morning with that file taken out. second time this month, can someone look\n\nDev (on call)",
+      "labels": []
+    },
+    {
+      "id": "CP-02",
+      "title": "E90031 members missing this morning",
+      "body": "Hi, Synthetic Supplies rang. Their new joiners from Monday's file aren't showing. Same for two other employers I think (E90044 and E90052?). The files definitely arrived on the 9th because ops confirmed it. Is it the files or is it us?\n\nThanks, Mel (Employer Relations)",
+      "labels": []
+    },
+    {
+      "id": "CP-03",
+      "title": "job crashes if a file isnt there",
+      "body": "ran python -m pipeline.ingest_members with yesterday's list. one of the files had been moved by ops and the whole thing died with a FileNotFoundError traceback. the other files in the list never loaded.\n\nsurely it should say that file is rejected and carry on, like it does for a bad trailer?",
+      "labels": []
+    },
+    {
+      "id": "CP-04",
+      "title": "feeds imports pipeline.settings",
+      "body": "the feeds reader pulls STRICT_SCHEMA out of pipeline.settings. thats a library module importing from the jobs package, and it means you cant use read_file from a notebook without the pipeline package on the path.\n\nread_file already takes strict=... so the jobs could just pass it in? not urgent but it bugs me every time i see it. settings.py itself shouldnt need to change.",
+      "labels": []
+    },
+    {
+      "id": "CP-05",
+      "title": "No audit event when a member file is rejected",
+      "body": "Audit asked which member files we turned away in October and I had to grep the logs to answer. We record member_file_loaded but nothing at all when a file is rejected.\n\nCan we record an event for that too? Same actor. Put the reason in the detail but no field values obviously.",
+      "labels": []
+    },
+    {
+      "id": "CP-06",
+      "title": "member job: total line at the end",
+      "body": "when you give the member job 30 files you get 30 lines and have to count the rejected ones by eye. a last line like\n\n    30 files: 28 loaded, 2 rejected\n\nwould do. keep the per-file lines as they are, the scheduler greps them.",
+      "labels": []
+    },
+    {
+      "id": "CP-07",
+      "title": "Email late payers automatically",
+      "body": "Could the contributions job just email the employer's payroll contact when they are on the late list? It would save us an afternoon every month. We have the addresses in the employer system.\n\nSam (Finance Ops)",
+      "labels": []
+    },
+    {
+      "id": "CP-08",
+      "title": "reject files with extra columns",
+      "body": "E90001 sent a member file with an extra column last year (a PT/FT flag) and I'm told we loaded rubbish from it. Can the reader refuse files that have more columns than the contract says?",
+      "labels": []
+    },
+    {
+      "id": "CP-09",
+      "title": "reports look wrong in Excel",
+      "body": "The reports look wrong when I open them in Excel. Can someone fix?\n\nJo",
+      "labels": []
+    },
+    {
+      "id": "CP-10",
+      "title": "PAY02 chased but it was paid on the 22nd",
+      "body": "Fictional Foods say PAY02 for September was paid on 22 October, which is the due date, but they still got chased. Is the late list off by one?\n\nSam",
+      "labels": []
+    },
+    {
+      "id": "CP-11",
+      "title": "move to PySpark 4",
+      "body": "3.5 is getting old and 4.0 has been out for a while now. Can we upgrade? Might fix the slow tests as well.",
+      "labels": []
+    },
+    {
+      "id": "CP-12",
+      "title": "add employment type to the member record",
+      "body": "Employers keep sending a PT/FT column on the member file. Can we add employment_type to MemberRecord so we stop rejecting those files? I had a go at editing src/generated/member_feed.py but then a test failed and I gave up.",
+      "labels": []
+    },
+    {
+      "id": "CP-13",
+      "title": "variance figures look wrong for E90005",
+      "body": "Finance came back to me saying the variance figures for E90005 look wrong. They didnt say which month or which numbers, just that they dont match their sheet. Can someone have a look?\n\nSam",
+      "labels": []
+    },
+    {
+      "id": "CP-14",
+      "title": "nightly jobs started an hour late on Sunday",
+      "body": "The 02:00 jobs started at 03:00 on Sunday 25 October. Nothing failed but the files were an hour late into the database. Is that a bug in the pipeline?",
+      "labels": []
+    },
+    {
+      "id": "CP-15",
+      "title": "audit log path for the new server",
+      "body": "Ops are moving the nightly jobs to the new box and the audit log needs to go on the D: drive there. Can someone change AUDIT_LOG_PATH in settings before the move on the 30th?",
+      "labels": []
+    }
+  ]
+}

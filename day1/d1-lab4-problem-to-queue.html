@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab 4, problem to queue</title>
+<link rel="stylesheet" href="../handout.css">
+<script src="../zoom.js"></script>
+<script>
+/* Marks the page as script-enabled so the chooser shows. With scripts off, every variant stays visible. */
+document.documentElement.className += " js";
+</script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Day 1</p>
+  <h1>Lab 4, problem to queue</h1>
+  <ul class="meta">
+    <li>Length 80 minutes</li>
+  </ul>
+</header>
+
+<form class="chooser" id="chooser" aria-label="Show only my agent and stack">
+  <fieldset>
+    <legend>Agent</legend>
+    <label><input type="radio" name="agent" value="both" checked> Both</label>
+    <label><input type="radio" name="agent" value="claude"> Claude Code</label>
+    <label><input type="radio" name="agent" value="copilot"> GitHub Copilot</label>
+  </fieldset>
+  <fieldset>
+    <legend>Stack</legend>
+    <label><input type="radio" name="stack" value="both" checked> Both</label>
+    <label><input type="radio" name="stack" value="python"> Python</label>
+    <label><input type="radio" name="stack" value="dotnet"> .NET</label>
+  </fieldset>
+</form>
+
+<h2>Goal</h2>
+<p>Turn one log line into a failing test, and triage a backlog in list order into a queue for an agent.</p>
+
+<h2>Before you start</h2>
+<ul>
+  <li>Your repo from labs 1 to 3 on <code>main</code>, open in PowerShell in its root, your route, and paper for the agent&#39;s mistakes.</li>
+  <li>The course kit in <code>C:\course\kit</code>. If yours is elsewhere, change the path in step 1.</li>
+</ul>
+
+<h2>Steps</h2>
+<ol class="steps">
+
+  <li>
+    <p class="step-title">Load the backlog, dry run first. On route A or B, change <code>C</code> to your letter.</p>
+    <p>The loader puts 15 issues in your tracker for triage in part 2. The dry run prints what it would do and changes nothing.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File C:\course\kit\load-backlog.ps1 -Route C -DryRun</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File C:\course\kit\load-backlog.ps1 -Route C</code></pre>
+    <p class="note">The real run ends with <code>Summary: 15 issues created</code>. On routes A and B the label counts add up to 7.</p>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 1, a test for the log line</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 1. </span>Make a branch for the test. It never goes onto <code>main</code>.</p>
+    <p>The test fails on purpose, so it stays on its own branch and the check on <code>main</code> stays green.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch -c repro/log-line</code></pre>
+    <p>The agent starts from the log line alone and proves the bug with a test that fails because of it. Name no file, even if asked. The agent should find it.</p>
+    <p>Type <code data-copy="Prompt to paste into the agent">/clear</code>, in Copilot CLI if you use VS Code. Send your stack&#39;s prompt.</p>
+    <div class="variants stack-pair">
+      <div class="variant python" data-stack="python">
+        <span class="label">Python</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>The nightly member job stopped last night. Find out why, but do not fix it. Write a test that fails because of this bug, run it, and show me it fails for that reason. The last line of its log was: ValueError: salary for member M940217 is not a decimal</code></pre>
+      </div>
+      <div class="variant dotnet" data-stack="dotnet">
+        <span class="label">.NET</span>
+        <pre class="cmd" data-copy="Prompt to paste into the agent"><code>The nightly member job stopped last night. Find out why, but do not fix it. Write a test that fails because of this bug, run it, and show me it fails for that reason. The alert showed only this line: Unhandled exception. System.FormatException: The input string '41,250.00' was not in a correct format.</code></pre>
+      </div>
+    </div>
+  </li>
+
+  <li>
+    <p class="step-title">When the agent stops, run your check command.</p>
+    <p>The check shows whether the new test fails, and fails for the right reason.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+    <p class="note">Only the new test fails, with the error type from the log line. The member may differ.</p>
+  </li>
+
+  <li>
+    <p class="step-title">Commit the test on the branch. Go back to <code>main</code> only if the commit worked.</p>
+    <p>The commit keeps the failing test on its branch, ready for Day 2 to fix the bug.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add tests; git commit -m "Add a failing test for the bad salary"</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch main</code></pre>
+  </li>
+
+</ol>
+
+<h3 class="print-hide">Part 2, triage</h3>
+<ol class="steps">
+
+  <li>
+    <p class="step-title"><span class="print-only">Part 2. </span>On routes A and B, read your lab 3 CI run.</p>
+    <p>Each push in lab 3 started a run of the check job on GitHub. The list shows those runs and whether each one passed.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>gh run list --workflow ci.yml --limit 3</code></pre>
+    <p class="note">Tell the trainer if it failed.</p>
+  </li>
+
+  <li>
+    <p class="step-title">Type <code data-copy="Prompt to paste into the agent">/clear</code>, then start triage.</p>
+    <p>Triage gives each issue a state and a reason, so the ready ones form a queue an agent can take. The skill recommends, and applies nothing until you agree.</p>
+    <p>In reply, send <code data-copy="Prompt to paste into the agent">Agreed. Apply it and go on to the next issue.</code> or <code data-copy="Prompt to paste into the agent">Take your recommended answers.</code> Answer other questions with its advice. Stop at 5 ready and 1 record, or after the seventh issue.</p>
+    <pre class="cmd" data-copy="Prompt to paste into the agent"><code>/triage Triage the backlog one issue at a time, oldest first. Recommend a category and a state for each, then wait for my decision.</code></pre>
+  </li>
+
+  <li>
+    <p class="step-title">Read <code data-copy="Command to paste into PowerShell">git status --short</code>, then commit what triage wrote.</p>
+    <p>Triage writes into the repo: the out of scope record on every route, and the issues as well on route C.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add ('.scratch','.out-of-scope' | ? { Test-Path $_ }); git commit -m "Triage the backlog"</code></pre>
+    <p class="note">Line ending warnings are normal.</p>
+    <p>Routes A and B: then push, so the triage comment links work.</p>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git push</code></pre>
+  </li>
+
+</ol>
+
+<h2>The artefact you leave in the repo</h2>
+<ul>
+  <li>On <code>repro/log-line</code>, a test that fails because of the bug. Nothing is fixed.</li>
+  <li>On <code>main</code>, triaged issues with a state and a reason, up to 5 ready with a brief, 1 record in <code>.out-of-scope</code>.</li>
+</ul>
+
+<h2>Done check</h2>
+<div class="done-check">
+  <p>These show that the test still fails on its branch, that <code>main</code> passes, and what triage left. Routes A and B use <code>gh</code>, and route C uses <code>sls</code>.</p>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch repro/log-line; powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch main; powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>gh issue list --label ready-for-agent --search sort:created-asc</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>sls "^Status:" .scratch\backlog\issues\*.md -List | group Line -NoElement</code></pre>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>Get-ChildItem .out-of-scope</code></pre>
+  <p class="note">The last line is not <code>0</code> on the branch and is <code>0</code> on <code>main</code>. Done is 5 ready and 1 record, or 7 triaged.<span class="print-only"> Finished early? Stretch goals: <a href="d1-stretch-goals.html">d1-stretch-goals.html</a>.</span></p>
+</div>
+
+<h2>If you are stuck</h2>
+<div class="stuck">
+  <ul>
+    <li>If the agent fixed the bug, undo its changes outside <code>tests</code>, keep the test and run the check. The undo also deletes any untracked file you made outside <code>tests</code>, so move a file you want to keep first.</li>
+  </ul>
+  <pre class="cmd" data-copy="Command to paste into PowerShell"><code>git restore --staged --worktree -- . ':!tests'; git clean -fd -- . ':!tests' ':!.scratch'</code></pre>
+  <ul>
+    <li>If the test passes, or fails for another reason, send <code data-copy="Prompt to paste into the agent">Make it fail because of the bug.</code> If the check shows 0, ask the agent to put the test where the check runs it.</li>
+    <li>If the loader on route A or B fails for two minutes, use route C. Run step 1 with <code>-Route C</code>, then <code data-copy="Command to paste into PowerShell">Copy-Item .claude\skills\setup-matt-pocock-skills\issue-tracker-local.md docs\agents\issue-tracker.md</code>.</li>
+  </ul>
+</div>
+
+<div class="done-check print-hide">
+  <p class="step-title">Finished early? Take a stretch goal.</p>
+  <p>The sheet <a id="stretch-link" href="d1-stretch-goals.html?lab=4">d1-stretch-goals.html</a> opens at the two stretch goals for lab 4.</p>
+  <p>Before you leave, the sheet <a href="d1-between-the-days.html">d1-between-the-days.html</a> lists what to do before Day 2.</p>
+</div>
+
+<div class="footer print-hide">
+  <p class="step-title">Stuck or finished? Scan for the solution.</p>
+  <svg role="img" aria-label="QR code for the lab 4 solution" width="180" height="180"><g transform="scale(4)"><path fill="#fff" d="M0 0h45v45h-45z"/><path stroke="#000" d="M4 4.5h7m2 0h1m1 0h4m8 0h1m1 0h2m3 0h7m-37 1h1m5 0h1m2 0h1m3 0h5m2 0h1m1 0h1m2 0h3m2 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m1 0h2m3 0h1m1 0h2m4 0h3m6 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m3 0h3m2 0h2m1 0h1m2 0h5m2 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h2m1 0h5m1 0h4m2 0h1m6 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m1 0h2m1 0h1m3 0h1m1 0h1m2 0h1m1 0h1m3 0h2m2 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-29 1h2m3 0h9m2 0h1m-25 1h1m1 0h5m2 0h1m4 0h1m1 0h1m2 0h1m3 0h3m4 0h5m-35 1h1m2 0h3m1 0h1m1 0h1m2 0h4m1 0h2m1 0h1m2 0h1m4 0h1m5 0h2m-36 1h1m2 0h1m2 0h1m1 0h1m1 0h2m3 0h2m2 0h1m2 0h1m2 0h9m1 0h2m-33 1h1m5 0h1m3 0h2m3 0h4m1 0h1m1 0h2m2 0h1m5 0h1m-36 1h1m2 0h5m3 0h1m2 0h1m1 0h1m1 0h1m2 0h9m1 0h1m1 0h3m-37 1h4m1 0h1m1 0h1m1 0h1m2 0h3m3 0h3m1 0h2m1 0h1m2 0h1m2 0h1m-31 1h1m1 0h2m1 0h1m2 0h1m1 0h1m3 0h2m1 0h1m3 0h1m1 0h1m1 0h2m1 0h1m1 0h3m1 0h2m-37 1h1m1 0h2m1 0h1m1 0h2m3 0h5m3 0h2m1 0h1m2 0h1m1 0h2m1 0h2m2 0h1m-36 1h4m2 0h1m4 0h5m2 0h2m2 0h5m2 0h4m1 0h2m-36 1h1m1 0h2m3 0h3m1 0h1m3 0h2m4 0h1m1 0h1m1 0h2m1 0h1m2 0h1m3 0h1m-36 1h2m2 0h1m1 0h8m3 0h2m3 0h1m1 0h1m2 0h1m2 0h1m1 0h1m2 0h2m-35 1h3m3 0h1m2 0h4m1 0h1m4 0h2m3 0h7m3 0h1m-36 1h6m1 0h1m2 0h1m2 0h1m2 0h1m4 0h1m1 0h3m2 0h2m1 0h1m1 0h1m-34 1h3m3 0h1m1 0h3m4 0h5m2 0h2m1 0h1m1 0h1m4 0h1m-33 1h2m1 0h4m1 0h3m1 0h1m1 0h3m3 0h1m2 0h2m1 0h7m1 0h2m-36 1h3m1 0h1m1 0h1m1 0h2m2 0h2m2 0h5m1 0h2m1 0h2m2 0h3m2 0h1m-35 1h1m2 0h1m1 0h1m3 0h1m1 0h1m1 0h3m5 0h1m2 0h3m2 0h1m1 0h1m1 0h1m1 0h1m-37 1h1m1 0h2m1 0h1m4 0h3m2 0h1m1 0h2m3 0h2m4 0h2m1 0h1m-32 1h1m2 0h4m1 0h4m1 0h1m1 0h3m4 0h1m3 0h4m1 0h3m1 0h2m-37 1h1m1 0h1m1 0h1m2 0h3m5 0h1m4 0h3m4 0h2m2 0h2m2 0h2m-37 1h1m1 0h5m5 0h1m1 0h4m1 0h1m2 0h1m1 0h3m1 0h7m-27 1h1m2 0h1m1 0h2m1 0h1m2 0h5m1 0h1m1 0h2m3 0h2m1 0h1m-36 1h7m4 0h1m3 0h1m2 0h1m1 0h3m2 0h2m1 0h1m1 0h1m1 0h1m1 0h3m-37 1h1m5 0h1m1 0h2m2 0h1m6 0h1m1 0h1m4 0h1m1 0h1m3 0h2m1 0h2m-37 1h1m1 0h3m1 0h1m1 0h1m2 0h5m2 0h2m2 0h1m2 0h8m1 0h2m-36 1h1m1 0h3m1 0h1m1 0h3m2 0h4m2 0h3m1 0h1m1 0h1m2 0h3m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h3m1 0h2m6 0h1m3 0h1m2 0h1m1 0h1m5 0h2m-37 1h1m5 0h1m2 0h1m1 0h3m2 0h1m3 0h2m5 0h2m1 0h1m1 0h1m3 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m3 0h2m1 0h1m2 0h2m1 0h3m1 0h2m1 0h5"/></g></svg>
+</div>
+
+</main>
+
+<script>
+/* Lets the learner hide the agent and the stack they do not use, and remembers the choice. */
+(function () {
+  var root = document.documentElement;
+  var key = "handout-choice";
+  var form = document.getElementById("chooser");
+  if (!form) { return; }
+  var all = ["claude", "copilot", "python", "dotnet"];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
+  }
+  function save(c) {
+    try { localStorage.setItem(key, JSON.stringify(c)); } catch (e) { /* storage may be blocked */ }
+  }
+  /* A URL such as ?stack=python or ?agent=claude sets the starting choice. It wins over the stored choice. */
+  function param(name, values) {
+    var v = (new RegExp("[?&]" + name + "=([^&#]*)").exec(location.search) || [])[1];
+    return values.indexOf(v) < 0 ? null : v;
+  }
+  /* The stretch goals link carries the lab and the agent and stack the learner chose. */
+  function link(c) {
+    var a = document.getElementById("stretch-link");
+    if (!a) { return; }
+    var href = a.getAttribute("href").split("&")[0];
+    ["agent", "stack"].forEach(function (g) {
+      if (c[g] && c[g] !== "both") { href += "&" + g + "=" + c[g]; }
+    });
+    a.setAttribute("href", href);
+  }
+  function apply(c) {
+    all.forEach(function (n) { root.classList.remove("hide-" + n); });
+    if (c.agent && c.agent !== "both") { root.classList.add("hide-" + (c.agent === "claude" ? "copilot" : "claude")); }
+    if (c.stack && c.stack !== "both") { root.classList.add("hide-" + (c.stack === "python" ? "dotnet" : "python")); }
+    ["agent", "stack"].forEach(function (g) {
+      var v = c[g] || "both";
+      var el = form.querySelector('input[name="' + g + '"][value="' + v + '"]');
+      if (el) { el.checked = true; }
+    });
+    link(c);
+  }
+
+  var choice = load();
+  [["agent", ["claude", "copilot"]], ["stack", ["python", "dotnet"]]].forEach(function (p) {
+    var v = param(p[0], p[1]);
+    if (v) { choice[p[0]] = v; }
+  });
+  apply(choice);
+  form.addEventListener("change", function (e) {
+    choice[e.target.name] = e.target.value;
+    save(choice);
+    apply(choice);
+  });
+})();
+</script>
+</body>
+</html>

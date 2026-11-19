@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stretch goals, Day 1</title>
+<link rel="stylesheet" href="../handout.css">
+<script src="../zoom.js"></script>
+<script>
+/* Marks the page as script-enabled so the chooser shows. With scripts off, every variant stays visible. */
+document.documentElement.className += " js";
+</script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Day 1</p>
+  <h1>Stretch goals, Day 1</h1>
+  <ul class="meta">
+    <li>Two goals for each lab</li>
+    <li>About 5 to 15 minutes each</li>
+  </ul>
+</header>
+
+<form class="chooser" id="chooser" aria-label="Show only my lab, agent and stack">
+  <fieldset>
+    <legend>Lab</legend>
+    <label><input type="radio" name="lab" value="all" checked> All</label>
+    <label><input type="radio" name="lab" value="1"> 1</label>
+    <label><input type="radio" name="lab" value="2"> 2</label>
+    <label><input type="radio" name="lab" value="3"> 3</label>
+    <label><input type="radio" name="lab" value="4"> 4</label>
+  </fieldset>
+  <fieldset>
+    <legend>Agent</legend>
+    <label><input type="radio" name="agent" value="both" checked> Both</label>
+    <label><input type="radio" name="agent" value="claude"> Claude Code</label>
+    <label><input type="radio" name="agent" value="copilot"> GitHub Copilot</label>
+  </fieldset>
+  <fieldset>
+    <legend>Stack</legend>
+    <label><input type="radio" name="stack" value="both" checked> Both</label>
+    <label><input type="radio" name="stack" value="python"> Python</label>
+    <label><input type="radio" name="stack" value="dotnet"> .NET</label>
+  </fieldset>
+</form>
+
+<p>Take a goal once you meet your lab's done check. The second goal is the harder one. Stop when the trainer calls the room back, and do its put back line, so the next lab finds your repo as it expects. Start each goal in a fresh session: <code data-copy="Prompt to paste into the agent">/exit</code> and start again, or a New Chat in VS Code. The prompts suit both agents. Note the agent's mistakes on your paper. The check is <code data-copy="Command to paste into PowerShell">powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code>.</p>
+
+<section data-lab="1">
+<h2>Lab 1, drive the agent</h2>
+
+<h3>1. Yes to what reads, No to what deletes</h3>
+<p>Make an untracked file with <code data-copy="Command to paste into PowerShell">Set-Content notes.txt 'my notes'</code>, then send the prompt. Judge each command the agent asks to run. Does it change a file? Does it stay in this repo? Can you undo it? Git holds no copy of an untracked file, so its delete cannot be undone. Say Yes to a command that only lists. Say No to any delete, also when it tries another command for the same delete. Write each command, your answer and why on your paper.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Remove every file in this repo that git does not track.</code></pre>
+<div class="done-check">
+  <p>Done when <code data-copy="Command to paste into PowerShell">Test-Path notes.txt</code> prints <code>True</code> and your paper lists each command with Yes or No and a reason. Put back. Run <code data-copy="Command to paste into PowerShell">Remove-Item notes.txt -ErrorAction SilentlyContinue</code>. If a Yes deleted more than that file, tell the trainer.</p>
+</div>
+
+<h3>2. Ask it to remember, with memory off</h3>
+<p>Send the first prompt. Memory is off, so the agent may ask to hide a file from git or to write one that later sessions read. <span data-agent="claude">Claude Code may ask for <code>CLAUDE.md</code>.</span> <span data-agent="copilot">Copilot may ask for <code>.github\copilot-instructions.md</code>.</span> Say No, as the later labs expect no such file. Then send the second prompt in a fresh session.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Remember for all future sessions in this repo: I want every answer as one short list.</code></pre>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>How do I want answers in this repo? Reply in one line.</code></pre>
+<div class="done-check">
+  <p>Done when the new session does not know, and <code data-copy="Command to paste into PowerShell">Test-Path CLAUDE.md, CLAUDE.local.md, .github\copilot-instructions.md; git status --short</code> prints <code>False</code> three times and nothing else. Put back. Delete any file it wrote with <code>Remove-Item</code>, and any line it added in <code data-copy="Command to paste into PowerShell">notepad .git\info\exclude</code>.</p>
+</div>
+</section>
+
+<section data-lab="2">
+<h2>Lab 2, one-command build and test</h2>
+
+<h3>1. What does a pointer save?</h3>
+<p>Send the prompt. Note the file it names and how many files it opens. Then move <code>AGENTS.md</code> out of the repo, start a fresh session and send the same prompt. Note the same two things. Expect the same answer both times, found in one step with the pointer and after several files without it. That saved search is what the pointer earns.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>How do I build and test this repo? Answer in one line, name the file that told you, and run nothing.</code></pre>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>Move-Item AGENTS.md $env:TEMP\AGENTS.md</code></pre>
+<div class="done-check">
+  <p>Done when your paper holds both answers, the files each one opened, and whether the pointer earns its line. Put back. Run <code data-copy="Command to paste into PowerShell">Move-Item $env:TEMP\AGENTS.md . -ErrorAction SilentlyContinue</code>. Then <code data-copy="Command to paste into PowerShell">Test-Path AGENTS.md</code> prints <code>True</code>.</p>
+</div>
+
+<h3>2. Does the agent check its own work?</h3>
+<p>The prompt does not say how to check. Say Yes when the agent asks to run <code>scripts\check.ps1</code>. If it runs another test command, note a mistake and ask which command <code>AGENTS.md</code> gives.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Add a one-line comment at the top of the unit test file with the most tests, saying what it tests. Make sure nothing is broken.</code></pre>
+<div class="done-check">
+  <p>Done when the agent ran <code>scripts\check.ps1</code> unasked, it ended with <code>0</code>, and one test file changed. Put back. Run <code data-copy="Command to paste into PowerShell">git restore tests</code>.</p>
+</div>
+</section>
+
+<section data-lab="3">
+<h2>Lab 3, rules become checks</h2>
+
+<h3>1. Which layer catches it?</h3>
+<p>Run the blocks in order. Plant a banned date call in a new file, stage it and run your hook without a commit, then run the check. Note which fails. Then swap that fault for spaces at the end of a line, and run the hook block and the check again. The answers depend on the hook you kept in lab 3. CI catches what the check catches.</p>
+<div class="variants stack-pair">
+  <div class="variant python" data-stack="python">
+    <span class="label">Python</span>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>'from datetime import datetime', 'parse = datetime.strptime' | Set-Content src\stretch.py</code></pre>
+  </div>
+  <div class="variant dotnet" data-stack="dotnet">
+    <span class="label">.NET</span>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>@(
+'namespace MemberIngestion;'
+''
+'internal static class Stretch'
+'{'
+'    internal static DateOnly Day() => DateOnly.Parse("01/02/2026");'
+'}'
+) | Set-Content src\MemberIngestion\Stretch.cs</code></pre>
+  </div>
+</div>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git add -A; powershell -ExecutionPolicy Bypass -File scripts\pre-commit.ps1; $LASTEXITCODE</code></pre>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git reset -q; git clean -fq src; Add-Content README.md 'Ends in spaces.   '</code></pre>
+<div class="done-check">
+  <p>Done when your paper has a row for each fault with the layer that caught it, the hook, the check or none, and why that layer is right or wrong. Put back. Run <code data-copy="Command to paste into PowerShell">git reset -q; git restore .; git clean -fq src</code>, wherever you stopped.</p>
+</div>
+
+<h3>2. Break a boundary and let the agent find it</h3>
+<p>Add a dependency that points upwards and run the lab 3 boundary check. It fails. The prompt names no file. The agent will ask to run the boundary check. Say Yes.</p>
+<div class="variants stack-pair">
+  <div class="variant python" data-stack="python">
+    <span class="label">Python</span>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>Add-Content src\valuation_extract\__init__.py 'import employer_reports'</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>$env:PYTHONPATH = "src;vendor;."; lint-imports</code></pre>
+  </div>
+  <div class="variant dotnet" data-stack="dotnet">
+    <span class="label">.NET</span>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>'namespace MemberIngestion.Members;', 'internal static class S { internal static Type K() => typeof(Reports.JoinersReport); }' | Set-Content src\MemberIngestion\Members\S.cs</code></pre>
+    <pre class="cmd" data-copy="Command to paste into PowerShell"><code>dotnet test tests/MemberIngestion.UnitTests --filter FullyQualifiedName~ArchitectureTests</code></pre>
+  </div>
+</div>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>The boundary check fails. Find the dependency that breaks it and say why it is not allowed, in two lines. Change no file.</code></pre>
+<div class="done-check">
+  <p>Done when the agent names the line you added and the layer rule it breaks, and changed nothing. Put back. Run <code data-copy="Command to paste into PowerShell">git restore src; git clean -fq src</code>. The check then ends with <code>0</code>.</p>
+</div>
+</section>
+
+<section data-lab="4">
+<h2>Lab 4, problem to queue</h2>
+
+<h3>1. Argue with your own triage</h3>
+<p>On a clean <code>main</code>, pick the issue you triaged with the least certainty, and write its state and your reason on your paper. Send the prompt with that issue's title typed after the last word. The agent argues from the issue's words alone. Say No to any command that changes an issue.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Read only the issue whose title follows, in this repo's issue tracker. Open no other file, no code and no other issue, and run no command except one that reads that issue. Using only the words of that issue and the five triage states, needs-triage, needs-info, ready-for-agent, ready-for-human and wontfix, give the strongest case for a state other than its current one. Then say whether you would keep its current state, and why. Name no other issue, and suggest no cause and no fix. Change nothing. The title:</code></pre>
+<div class="done-check">
+  <p>Done when your paper holds your state and reason, the agent's case against it, and whether you keep your state and why. Note a change you want on paper and leave the tracker as it is. Put back. Run <code data-copy="Command to paste into PowerShell">git restore .; git clean -fq .scratch .out-of-scope</code>. It removes only what changed in the goal, never your committed triage.</p>
+</div>
+
+<h3>2. Red for the wrong reason</h3>
+<p>Spoil the test on the test branch, run the check, and read why it is red. Send the prompt, and say Yes when the agent asks to run the tests. Then run <code data-copy="Command to paste into PowerShell">git restore tests</code> and the check again.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch repro/log-line; $t = git diff --name-only main -- 'tests/*.py' 'tests/*.cs' | select -First 1; Add-Content $t 'broken here'</code></pre>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Does the failing test on this branch fail because of the bug it was written for, or for another reason? Prove it from the test output. Change no file.</code></pre>
+<div class="done-check">
+  <p>Done when the agent said the spoilt test fails for another reason and quoted that error, then the restored test fails with the log line's error. Put back. Run <code data-copy="Command to paste into PowerShell">git restore tests; git switch main</code>.</p>
+</div>
+</section>
+
+<div class="footer print-hide">
+  <p class="step-title">Stuck or finished? Scan for the solution.</p>
+  <svg role="img" aria-label="QR code for the stretch goals solution" width="180" height="180"><g transform="scale(4)"><path fill="#fff" d="M0 0h45v45h-45z"/><path stroke="#000" d="M4 4.5h7m1 0h4m1 0h3m1 0h2m7 0h1m3 0h7m-37 1h1m5 0h1m1 0h4m4 0h2m1 0h1m1 0h2m1 0h1m5 0h1m5 0h1m-37 1h1m1 0h3m1 0h1m1 0h5m3 0h1m3 0h2m3 0h1m2 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m5 0h2m1 0h5m1 0h5m2 0h1m1 0h1m1 0h3m1 0h1m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m1 0h2m1 0h1m4 0h1m3 0h1m1 0h3m1 0h1m-37 1h1m5 0h1m2 0h4m1 0h2m4 0h4m2 0h1m1 0h1m1 0h1m5 0h1m-37 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h1m3 0h1m1 0h1m3 0h1m1 0h2m1 0h1m-28 1h1m2 0h6m2 0h2m2 0h4m3 0h3m1 0h1m2 0h1m2 0h1m1 0h3m-35 1h2m4 0h1m1 0h1m1 0h1m1 0h1m2 0h3m1 0h3m3 0h1m4 0h2m1 0h1m-36 1h4m1 0h2m2 0h2m1 0h2m3 0h1m4 0h2m1 0h1m1 0h1m2 0h2m1 0h1m2 0h1m-35 1h2m3 0h1m1 0h1m2 0h4m1 0h1m5 0h2m1 0h1m2 0h2m2 0h4m-36 1h3m2 0h6m1 0h1m2 0h1m3 0h1m2 0h2m2 0h1m2 0h2m4 0h1m-33 1h2m2 0h3m1 0h4m1 0h2m2 0h3m1 0h4m3 0h2m-33 1h8m1 0h2m2 0h2m1 0h1m1 0h1m1 0h1m2 0h6m2 0h5m-35 1h3m3 0h1m2 0h1m2 0h1m3 0h1m4 0h1m2 0h2m1 0h1m1 0h1m1 0h3m-34 1h1m3 0h1m1 0h1m1 0h1m2 0h3m3 0h2m1 0h1m1 0h2m2 0h1m1 0h2m2 0h1m-34 1h5m1 0h1m1 0h3m2 0h1m1 0h5m4 0h1m1 0h1m1 0h1m1 0h1m1 0h2m-35 1h2m2 0h1m1 0h8m1 0h2m1 0h3m2 0h1m1 0h3m1 0h3m2 0h1m1 0h1m-35 1h1m2 0h1m1 0h1m2 0h1m1 0h3m4 0h1m2 0h2m1 0h1m1 0h1m1 0h2m2 0h1m2 0h1m-36 1h2m3 0h1m1 0h1m4 0h1m1 0h3m1 0h1m3 0h2m1 0h7m-32 1h1m2 0h1m3 0h1m4 0h3m1 0h3m2 0h3m2 0h1m4 0h1m1 0h1m-35 1h2m3 0h2m1 0h4m3 0h4m1 0h1m2 0h6m1 0h2m1 0h1m2 0h1m-36 1h1m2 0h2m1 0h3m2 0h1m1 0h7m3 0h1m1 0h1m1 0h7m-33 1h2m1 0h2m1 0h2m1 0h2m2 0h2m2 0h1m3 0h2m2 0h1m1 0h3m3 0h2m-37 1h2m3 0h1m3 0h1m2 0h1m4 0h1m3 0h1m1 0h1m1 0h5m2 0h2m-34 1h2m1 0h2m1 0h1m1 0h1m4 0h1m1 0h3m1 0h2m4 0h3m1 0h1m2 0h5m-37 1h1m1 0h1m2 0h1m1 0h1m1 0h2m1 0h1m1 0h1m8 0h1m2 0h1m4 0h1m1 0h2m-35 1h1m1 0h6m1 0h1m1 0h2m3 0h1m3 0h1m1 0h4m2 0h9m-29 1h1m1 0h1m2 0h1m1 0h1m1 0h1m1 0h3m3 0h1m2 0h1m3 0h1m1 0h1m-35 1h7m1 0h1m2 0h1m3 0h3m1 0h1m3 0h1m1 0h2m1 0h1m1 0h1m1 0h1m3 0h1m-37 1h1m5 0h1m1 0h2m1 0h2m1 0h2m2 0h1m1 0h1m1 0h1m2 0h4m3 0h1m2 0h2m-37 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h4m2 0h1m3 0h1m2 0h6m2 0h1m-36 1h1m1 0h3m1 0h1m1 0h1m3 0h1m2 0h1m2 0h2m2 0h2m1 0h3m1 0h2m4 0h2m-37 1h1m1 0h3m1 0h1m2 0h2m1 0h1m1 0h4m2 0h1m2 0h1m2 0h2m4 0h1m3 0h1m-37 1h1m5 0h1m2 0h1m1 0h4m2 0h1m2 0h1m1 0h2m5 0h2m1 0h5m-37 1h7m1 0h1m1 0h1m2 0h2m5 0h1m6 0h2m1 0h2m1 0h1m2 0h1"/></g></svg>
+</div>
+
+</main>
+
+<script>
+/* Lets the learner hide the agent and the stack they do not use, and remembers the choice. */
+(function () {
+  var root = document.documentElement;
+  var key = "handout-choice";
+  var form = document.getElementById("chooser");
+  if (!form) { return; }
+  var all = ["claude", "copilot", "python", "dotnet"];
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(key)) || {}; } catch (e) { return {}; }
+  }
+  function save(c) {
+    try { localStorage.setItem(key, JSON.stringify(c)); } catch (e) { /* storage may be blocked */ }
+  }
+  /* A URL such as ?stack=python or ?agent=claude sets the starting choice. It wins over the stored choice. */
+  function param(name, values) {
+    var v = (new RegExp("[?&]" + name + "=([^&#]*)").exec(location.search) || [])[1];
+    return values.indexOf(v) < 0 ? null : v;
+  }
+  /* The stretch goals link carries the lab and the agent and stack the learner chose. */
+  function link(c) {
+    var a = document.getElementById("stretch-link");
+    if (!a) { return; }
+    var href = a.getAttribute("href").split("&")[0];
+    ["agent", "stack"].forEach(function (g) {
+      if (c[g] && c[g] !== "both") { href += "&" + g + "=" + c[g]; }
+    });
+    a.setAttribute("href", href);
+  }
+  function apply(c) {
+    all.forEach(function (n) { root.classList.remove("hide-" + n); });
+    if (c.agent && c.agent !== "both") { root.classList.add("hide-" + (c.agent === "claude" ? "copilot" : "claude")); }
+    if (c.stack && c.stack !== "both") { root.classList.add("hide-" + (c.stack === "python" ? "dotnet" : "python")); }
+    ["agent", "stack"].forEach(function (g) {
+      var v = c[g] || "both";
+      var el = form.querySelector('input[name="' + g + '"][value="' + v + '"]');
+      if (el) { el.checked = true; }
+    });
+    link(c);
+  }
+
+  /* The lab filter starts from the URL, for example ?lab=2, and is not stored. */
+  function applyLab(v) {
+    v = v || "all";
+    var parts = document.querySelectorAll("[data-lab]");
+    for (var i = 0; i < parts.length; i++) {
+      parts[i].hidden = v !== "all" && parts[i].getAttribute("data-lab") !== v;
+    }
+    var el = form.querySelector('input[name="lab"][value="' + v + '"]');
+    if (el) { el.checked = true; }
+  }
+  applyLab(param("lab", ["1", "2", "3", "4"]));
+
+  var choice = load();
+  [["agent", ["claude", "copilot"]], ["stack", ["python", "dotnet"]]].forEach(function (p) {
+    var v = param(p[0], p[1]);
+    if (v) { choice[p[0]] = v; }
+  });
+  apply(choice);
+  form.addEventListener("change", function (e) {
+    if (e.target.name === "lab") { applyLab(e.target.value); return; }
+    choice[e.target.name] = e.target.value;
+    save(choice);
+    apply(choice);
+  });
+})();
+</script>
+</body>
+</html>

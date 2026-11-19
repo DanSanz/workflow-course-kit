@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alternatives card: Make the repository ready for agents</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Alternatives card</p>
+  <h1>Make the repository ready for agents</h1>
+  <ul class="meta">
+    <li>Workflow step: S1</li>
+    <li>Slot: Day 1, in the 13:15 block</li>
+  </ul>
+</header>
+
+<div class="card-grid">
+
+  <section class="wide">
+    <h2>Pocock's way</h2>
+    <p>Pocock keeps standing instructions small and moves checkable rules into the build.</p>
+    <ul>
+      <li><strong>A short <code>AGENTS.md</code>.</strong> It holds only what the agent cannot find by looking. The setup skill adds pointers, not content.</li>
+      <li><strong>Standards and a glossary in their own files.</strong> Review agents read the standards file, <code>docs/standards.md</code> in the lab. <code>GLOSSARY.md</code> gives each term a definition and an Avoid line.</li>
+      <li><strong>Fast checks at commit, slow checks in CI.</strong> A pre-commit hook runs the quick checks, ideally in under 3 seconds. CI runs the rest before merge. Per-edit harness hooks are slow and noisy.</li>
+      <li><strong>Repeated mistakes become checks.</strong> A review of one repo found a check script that nothing ran, and suggested a CI pipeline. In the lab, one banned-API rule finds the hand-rolled date parses.</li>
+      <li><strong>Deep modules.</strong> A small interface lets the agent use a module without reading it. A boundary check keeps modules apart.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What poteto does instead</h2>
+    <p>poteto encodes lessons in types and lint before prose. "The best rules are in your code."</p>
+    <ul>
+      <li><strong>Each review comment becomes a hard rule.</strong> poteto turns it into a lint rule, a CI failure or a design that removes the problem. A rule only a human enforces is "a code smell".</li>
+      <li><strong>Lint rule first, cleanup after.</strong> Add the rule so a bad pattern stops spreading. Then agents fix the old cases. One rule bans <code>useEffect</code> and CI fails on it.</li>
+      <li><strong>Instruction files are a soft layer.</strong> Nothing fails when an agent skips a written rule. Soft layers alone end in "complete trash".</li>
+      <li><strong>Evals.</strong> An eval checks each skill change.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What Theo does instead</h2>
+    <p>Theo hand-writes a short <code>AGENTS.md</code> in his own voice. Agent failures become evals before the instructions change.</p>
+    <ul>
+      <li><strong>A letter, not a rulebook.</strong> It says how we think and why, with few rules and no file paths. Generated agent files make models worse.</li>
+      <li><strong>What goes in.</strong> T3 Code's file holds a glossary of "you", "we" and "users", checklists and a taste section.</li>
+      <li><strong>One file for every tool.</strong> <code>CLAUDE.md</code> imports <code>AGENTS.md</code>, with Claude-only lines below.</li>
+      <li><strong>What his evals test.</strong> An eval of the times models misused T3 Code's tools let him cut their descriptions to a third.</li>
+    </ul>
+  </section>
+
+  <section class="wide">
+    <h2>Which target would justify switching</h2>
+    <p>At this step the targets differ on how much a team puts into skills, rules and checks.</p>
+    <ul>
+      <li><strong>Pocock's way</strong> fits the targets Planned backlog delegation and Risk-tiered platform. Both install one skill set per project. The second also uses poteto's way.</li>
+      <li><strong>Switch to poteto's way</strong> if your target is Environment-first autonomy. It needs a funded platform team and code that can be constrained. It costs up-front work on the environment, and eval runs cost tokens.</li>
+      <li><strong>Switch to Theo's way</strong> if your target is Evidence-gated agent merge. It needs fast CI, a staged release, a quick revert and senior engineers who judge evidence. The cost is fewer checks the whole team shares, unless failures move into the architecture, lint or CI. Supervised pairing uses a short hand-written file.</li>
+    </ul>
+  </section>
+
+</div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill card: writing-for-agents</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Skill card</p>
+  <h1>writing-for-agents</h1>
+  <ul class="meta">
+    <li>Learning outcome 1: Make a repository agent-ready: one-command checks, skills at project scope, AGENTS.md as pointers, a glossary and a standards file.</li>
+  </ul>
+</header>
+
+<h2>The pain point</h2>
+<p>A bloated <code>AGENTS.md</code> and bloated skills waste context. Matt Pocock says: "pulling it out into skills to stop that horrible frontloading". Agents also write long instructions, and most of the words explain what the model already knows.</p>
+
+<h2>What the skill does</h2>
+<p>It is a reference for writing any document an agent reads: a skill, an <code>AGENTS.md</code> or <code>CLAUDE.md</code> file, or a doc your <code>AGENTS.md</code> points to. It helps you find the lines that cost context and change no behaviour. It guides you in moving material out of <code>AGENTS.md</code> into skills, and writes nothing itself. The aim is a more concise document and more predictable output.</p>
+
+<h2>When to skip it</h2>
+<ul>
+  <li>You are writing a document that no agent reads. The skill is for documents an agent reads.</li>
+  <li>You want to know what a codebase contains. The skill is for how a document reads, not for what it knows.</li>
+</ul>
+
+<h2>Where the course uses it</h2>
+<ul>
+  <li>Day 1, 10:45, lab 2, one-command build and test. You write <code>AGENTS.md</code> as short pointers to other docs.</li>
+</ul>
+
+</main>
+</body>
+</html>

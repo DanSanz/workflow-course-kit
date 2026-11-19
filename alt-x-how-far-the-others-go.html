@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alternatives card: Decide how far agents go</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Alternatives card</p>
+  <h1>Decide how far agents go</h1>
+  <ul class="meta">
+    <li>Workflow step: X</li>
+    <li>Slot: Day 1, in the 09:00 block</li>
+  </ul>
+</header>
+
+<div class="card-grid">
+
+  <section class="wide">
+    <h2>Pocock's way</h2>
+    <p>Pocock has two rules. A person owns each change, and autonomy grows one trigger at a time.</p>
+    <ul>
+      <li><strong>The human owns the change.</strong> "You're the lead. They're the junior." The agent does the work. The human decides what is good enough.</li>
+      <li><strong>A named reviewer where it matters.</strong> In his Sandcastle repo, a <code>CODEOWNERS</code> file means any change to the public API report needs his review.</li>
+      <li><strong>One trigger at a time.</strong> Pocock adds automated triggers one at a time. Each one is throttled at first. A human reviews every PR while the triggers are added.</li>
+      <li><strong>Your team's rung.</strong> In this course, your team's rung is the list of triggers you have switched on.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What poteto does instead</h2>
+    <p>poteto climbs from 5 agents to 100 as trust grows.</p>
+    <ul>
+      <li><strong>A long climb.</strong> poteto started by babysitting one to five chats. You cannot jump to 100 without trust. Trying gives slop PRs, regressions and bugs. There is no shortcut, because trust is personal.</li>
+      <li><strong>Agents that merge.</strong> Later they had more than 10 coordinator agents, each on its own area with subagents. Agents merge their own PRs overnight and poteto samples the output each morning. The first unattended night felt "very scary".</li>
+      <li><strong>Limits on credentials.</strong> Big-tech infrastructure restricts credentials "so that you know your intern doesn't wipe your production database". poteto says that protects against agents too.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What Theo does instead</h2>
+    <p>Theo climbs a trust ladder to agent merge.</p>
+    <ul>
+      <li><strong>Five rungs.</strong> He finds the files and the agent edits them. Then he reads only the PR. Then the agent summarises and reviews. Then it says what to merge. At the top it finds, fixes and merges.</li>
+      <li><strong>The top rung.</strong> The agent merges bug fixes, performance work and other changes that are not product changes he has views on. He started on a project that does not auto deploy. About 150 agent merges gave two regressions. A new model moved him up a rung.</li>
+      <li><strong>Full access, fast undo.</strong> Auto mode is for the careful. If undoing a bad change takes over 15 seconds, you should not be vibe coding yet. He would rather fix faster than go slower, and revokes a bad nightly build.</li>
+    </ul>
+  </section>
+
+  <section class="wide">
+    <h2>Which target would justify switching</h2>
+    <p>At this step the targets differ on who authorises a merge.</p>
+    <ul>
+      <li><strong>Pocock's way</strong> fits the targets Supervised pairing, Planned backlog delegation and, by risk tier, Risk-tiered platform.</li>
+      <li><strong>Switch to poteto's way</strong> if your target is Environment-first autonomy. It needs a funded platform team and code that can be constrained. It costs defects that reach main before a person sees them.</li>
+      <li><strong>Switch to Theo's way</strong> if your target is Evidence-gated agent merge. It needs fast CI, a staged release, a quick revert and senior engineers who judge evidence. It costs engineers who stop understanding code they never read.</li>
+    </ul>
+  </section>
+
+</div>
+
+</main>
+</body>
+</html>

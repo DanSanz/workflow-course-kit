@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Between Day 1 and Day 2</title>
+<link rel="stylesheet" href="../handout.css">
+<script src="../zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Day 1</p>
+  <h1>Between Day 1 and Day 2</h1>
+  <ul class="meta">
+    <li>Part 1, six checks before Day 2</li>
+    <li>Part 2, one hour, then daily</li>
+  </ul>
+</header>
+
+<p>Day 2 starts from your course clone, so keep it on your VDI. Run each block of part 1 in PowerShell in its root.</p>
+
+<h2>Part 1, homework needed for Day 2</h2>
+
+<h3>1. Finish lab 3, so the check passes on main</h3>
+<p>Finish any part of <a href="d1-lab3-rules-become-checks.html">lab 3</a> you left open, and commit it on <code>main</code>. The Day 2 loop runs this check after each ticket. Done when the last line is <code>0</code>.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch main; powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+
+<h3>2. On routes A and B, make a red CI run green</h3>
+<p>If the newest run on <code>main</code> failed, open it on GitHub and read the failed step. Fix it on <code>main</code>, commit, <code data-copy="Command to paste into PowerShell">git push</code> and read again once the new run ends. Route C has no CI run. Its pre-push hook runs the check of item 1. Done when this prints <code>success</code>. Nothing? Push the workflow as in lab 3 step 5.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>gh run list --workflow ci.yml --branch main --limit 1 --json conclusion -q ".[0].conclusion"</code></pre>
+
+<h3>3. Check that the test on repro/log-line still fails</h3>
+<p>Day 2 fixes the bug from this test. Do not fix it or merge the branch. Then run <code data-copy="Command to paste into PowerShell">git switch main</code>.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git switch repro/log-line; powershell -ExecutionPolicy Bypass -File scripts\check.ps1; $LASTEXITCODE</code></pre>
+<p class="note">Done when the last line is not <code>0</code> and only the new test fails, with the error of the log line. In Python a <code>ValueError</code> for the salary escapes the job. In .NET the failure shows <code>Actual: typeof(System.FormatException)</code>. Green, or red for another reason? Send <code data-copy="Prompt to paste into the agent">Make it fail because of the bug.</code> on the branch and commit the test.</p>
+
+<h3>4. Check the skills set up, the labels and the glossary</h3>
+<p>Day 2 writes a spec and tickets to your tracker and adds terms to your glossary. These files must be committed on <code>main</code>. On routes A and B, also run <code data-copy="Command to paste into PowerShell">gh label list</code>.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git ls-files docs/agents GLOSSARY.md</code></pre>
+<p class="note">Done when it lists <code>domain.md</code>, <code>issue-tracker.md</code>, <code>triage-labels.md</code> and <code>GLOSSARY.md</code>, and on routes A and B the five labels of lab 2. One is missing? Redo its part of <a href="d1-lab2-one-command-build.html">lab 2</a> and commit it.</p>
+
+<h3>5. The day before Day 2, run the machine check</h3>
+<p>Day 2 runs your agent in a loop with no window. The check starts your agent that way and reads your GitHub sign in. Leave out <code>-AccessTest</code>. Done when the line <code>READ OUT TO THE TRAINER</code> names <code>Claude Code</code> or <code>Copilot CLI</code> as the agent. Otherwise sign in to your agent and run it again. Still not? Tell the trainer before Day 2.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>powershell -ExecutionPolicy Bypass -File C:\course\kit\check-machine.ps1</code></pre>
+
+<h3>6. Keep your session logs and the pinned skills</h3>
+<p>Delete no agent session, because Day 3 reads the logs. On Copilot in VS Code, keep the files you saved with Chat: Export Chat. Do not install or update the skills in <code>.claude\skills</code>. Done when this prints nothing.</p>
+<pre class="cmd" data-copy="Command to paste into PowerShell"><code>git diff --stat upstream/main -- .claude/skills</code></pre>
+
+<h2>Part 2, three habits on your own work repo</h2>
+<p>Set up in about an hour, then use daily. The prompts use no course skill. Type <code data-copy="Prompt to paste into the agent">/clear</code> between prompts, or use New Chat in VS Code.</p>
+
+<h3>1. Give your repo the lab 2 treatment</h3>
+<p>Send the prompts in turn. Already have one command that builds and runs the fast tests? Name it in the second and skip the first.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Write scripts\check.ps1 for Windows PowerShell 5.1. It builds the code and runs the fast tests. It stops at the first failure and exits with that code, or 0 when all pass.</code></pre>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Extend AGENTS.md with pointers, not prose: run scripts\check.ps1 to build and test, the domain terms are in GLOSSARY.md. Keep it under 40 lines.</code></pre>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Start GLOSSARY.md with the 10 core terms of this repo. Write each term in bold at the start of its line, with its meaning and the names to avoid. Challenge me where a term is fuzzy.</code></pre>
+<p class="note">Set up is done when the check ends with <code>0</code> and <code data-copy="Command to paste into PowerShell">(gc AGENTS.md).Count; (sls "^\*\*" GLOSSARY.md).Count</code> shows under 40, then 10 or more. Claude Code ignores AGENTS.md? Run <code data-copy="Command to paste into PowerShell">Add-Content CLAUDE.md '@AGENTS.md'</code>. Daily, end each request with <code data-copy="Prompt to paste into the agent">Run scripts\check.ps1 and give me its exit code.</code> It works when the agent shows <code>0</code> before it says it is done.</p>
+
+<h3>2. Turn one rule a week into a check</h3>
+<p>Pick the correction you type most often, from your mistake note, and type it after the prompt. Lab 3 used Ruff in Python and BannedApiAnalyzers in .NET. Then ask the agent to fix what it finds, as in lab 3. Done when the check ends with <code>0</code>, fails once you plant one break of the rule, and ends with <code>0</code> once you take it out. A hook stays under 3 seconds.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Make this rule a lint rule, or a pre-commit hook if a linter cannot express it. Add it to scripts\check.ps1. List what it finds and fix nothing yet. The rule:</code></pre>
+
+<h3>3. Start every bug with the symptom and a failing test</h3>
+<p>On a new branch, send this prompt with the symptom pasted after the last word. Name no file. Done when only the new test fails, with the error of the symptom. Then ask for the fix. The test passes and the check ends with <code>0</code>.</p>
+<pre class="cmd" data-copy="Prompt to paste into the agent"><code>Find out why, but do not fix it. Write a test that fails because of this bug, run it, and show me it fails for that reason. The symptom:</code></pre>
+
+<h2>Before Day 2</h2>
+<p>Keep the mistake note going. Each time the agent gets something wrong, write one line on paper at that moment: the date, what it did and what you expected. Trying Day 2 or Day 3 ahead on your own is welcome.<span class="print-hide"> The <a href="../skill-map.html">skill map</a> shows the 19 skills the course teaches.</span> What goes wrong is good material for Day 2. Bring the mistake note. The <a href="d1-stretch-goals.html">stretch goals sheet</a> is optional practice. Do each goal's put back line, so Day 2 finds your clone as it expects.</p>
+
+</main>
+
+</body>
+</html>

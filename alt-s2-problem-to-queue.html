@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alternatives card: Frame the problem and build the queue</title>
+<link rel="stylesheet" href="handout.css">
+<script src="zoom.js"></script>
+</head>
+<body>
+<main class="page">
+
+<header class="doc-head">
+  <p class="kicker">Alternatives card</p>
+  <h1>Frame the problem and build the queue</h1>
+  <ul class="meta">
+    <li>Workflow step: S2</li>
+    <li>Slot: Day 1, in the 15:00 block</li>
+  </ul>
+</header>
+
+<div class="card-grid">
+
+  <section class="wide">
+    <h2>Pocock's way</h2>
+    <p>Pocock gives the agent the problem, asks for a reproduction first and triages each issue into a queue.</p>
+    <ul>
+      <li><strong>Give the problem, not file names.</strong> The agent explores the code for facts. You decide only what it cannot look up.</li>
+      <li><strong>Reproduce before any fix.</strong> The agent first shows the failure on current code. In the lab, from one nightly log line, it writes a failing test.</li>
+      <li><strong>Triage with the triage skill.</strong> Each issue gets a category label, <code>bug</code> or <code>enhancement</code>. It gets one of five state labels, such as needs info or ready for agent.</li>
+      <li><strong>Write an agent brief before an issue is ready.</strong> Its headings are <code>Category</code>, <code>Summary</code>, <code>Current behavior</code>, <code>Desired behavior</code>, <code>Key interfaces</code>, <code>Acceptance criteria</code> and <code>Out of scope</code>.</li>
+      <li><strong>Record what you refuse.</strong> A <code>.out-of-scope</code> folder holds one file per rejected idea. The unattended runner takes only ready-for-agent issues.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What poteto does instead</h2>
+    <p>poteto's bots watch outside channels, and a bot tries to reproduce each bug report on a cloud computer.</p>
+    <ul>
+      <li><strong>Context, not control.</strong> poteto states the intent and coordinator agents split the work.</li>
+      <li><strong>Bots on outside channels.</strong> Bots watch Slack, X, email and Linear. One checks X mentions about every 30 minutes and groups repeats, such as five users reporting the same bug.</li>
+      <li><strong>Reproduce in the cloud.</strong> A bot called Benny reproduces each bug report on a cloud computer. It can find the bug already fixed on main. Agents rule out the user's setup, data or a missing dependency.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What Theo does instead</h2>
+    <p>Theo writes problem-first kickoff prompts. Reports become threads in an inbox, and bugs become GitHub issues.</p>
+    <ul>
+      <li><strong>Problem first.</strong> "I bring in the agent when I start thinking so we can talk it out."</li>
+      <li><strong>A kickoff prompt in parts.</strong> It names who is affected, firm priorities, what he does not know and one clear ask. It gives an out: "If you see a simple fix ... stop and let me know."</li>
+      <li><strong>Threads as an inbox.</strong> He settles them like inbox zero. A phone prompt for a user's screenshot: "Fix this. Test it. Record a video showing it works now and link me the PR when you're done."</li>
+    </ul>
+  </section>
+
+  <section class="wide">
+    <h2>Which target would justify switching</h2>
+    <p>At this step the targets differ on who turns a request into a plan.</p>
+    <ul>
+      <li><strong>Pocock's way</strong> fits the targets Supervised pairing, Planned backlog delegation and Risk-tiered platform. In each, an interview turns the request into a spec and tickets, which you meet on Day 2.</li>
+      <li><strong>Switch to poteto's way</strong> if your target is Environment-first autonomy. It needs a funded platform team and product people who can state intent. It costs plans that are not kept.</li>
+      <li><strong>Switch to Theo's way</strong> if your target is Evidence-gated agent merge. It needs fast CI, a staged release, a quick revert and senior engineers who judge evidence. It costs a thin paper trail for plans, which live in threads and HTML files in place of tickets.</li>
+    </ul>
+  </section>
+
+</div>
+
+</main>
+</body>
+</html>

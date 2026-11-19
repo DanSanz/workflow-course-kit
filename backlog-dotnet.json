@@ -1,0 +1,95 @@
+{
+  "stack": "dotnet",
+  "issues": [
+    {
+      "id": "MI-01",
+      "title": "member load fell over last night??",
+      "body": "on call again. the alert only shows the first line of the exception and the log has rotated, so this is all i have:\n\n```\nUnhandled exception. System.FormatException: The input string '41,250.00' was not in a correct format.\n```\n\nthere were three more employer files in the list and i dont think they went in. reran by hand this morning with that file taken out. second time this month, can someone look\n\nDev (on call)",
+      "labels": []
+    },
+    {
+      "id": "MI-02",
+      "title": "E90031 members missing this morning",
+      "body": "Hi, Synthetic Supplies rang. Their new joiners from Monday's file aren't showing. Same for two other employers I think (E90044 and E90052?). The files definitely arrived on the 9th because ops confirmed it. Is it the files or is it us?\n\nThanks, Mel (Employer Relations)",
+      "labels": []
+    },
+    {
+      "id": "MI-03",
+      "title": "job crashes if a file isnt there",
+      "body": "ran the job with yesterday's list. one of the files had been moved by ops and the whole thing died with a FileNotFoundException and a stack trace. the other files in the list never loaded.\n\nsurely it should say that file is rejected and carry on, like it does for a bad trailer?",
+      "labels": []
+    },
+    {
+      "id": "MI-04",
+      "title": "MemberFeedReader needs IngestionOptions",
+      "body": "the feed reader takes IOptions<IngestionOptions> just to read StrictSchema. thats the Feeds namespace reaching up into Ingestion. it also means you cant new up a reader in a small tool without building the whole options thing.\n\ncould Read just take a bool, and the ingestor pass it in? not urgent but it bugs me every time i see it. appsettings shouldnt need to change.",
+      "labels": []
+    },
+    {
+      "id": "MI-05",
+      "title": "No audit event when a member file is rejected",
+      "body": "Audit asked which member files we turned away in October and I had to grep the logs to answer. We record member_file_loaded but nothing at all when a file is rejected.\n\nCan we record an event for that too? Same actor. Put the reason in the detail but no field values obviously.",
+      "labels": []
+    },
+    {
+      "id": "MI-06",
+      "title": "job: total line at the end",
+      "body": "when you give the job 30 files you get 30 reports and have to count the rejected ones by eye. a last line like\n\n    30 files: 28 loaded, 2 rejected\n\nwould do. keep the per-file output as it is.",
+      "labels": []
+    },
+    {
+      "id": "MI-07",
+      "title": "Email the pack to the employer automatically",
+      "body": "Could the job just email the ingest report and the joiners list to the employer's payroll contact when a file loads? It would save us an afternoon every month. We have the addresses in the employer system.\n\nMel (Employer Relations)",
+      "labels": []
+    },
+    {
+      "id": "MI-08",
+      "title": "reject files with extra columns",
+      "body": "E90001 sent a member file with an extra column last year (a PT/FT flag) and I'm told we loaded rubbish from it. Can the reader refuse files that have more columns than the contract says?",
+      "labels": []
+    },
+    {
+      "id": "MI-09",
+      "title": "report looks wrong in Outlook",
+      "body": "The report looks wrong when I paste it into Outlook. Can someone fix?\n\nJo",
+      "labels": []
+    },
+    {
+      "id": "MI-10",
+      "title": "file date the wrong way round on my machine",
+      "body": "The ingest report for E90001 said dated 11/02/2026 when I ran it. The file is the 2 November one. Works for everyone else apparently. Is the report using my laptop's settings?\n\nSam",
+      "labels": []
+    },
+    {
+      "id": "MI-11",
+      "title": "move to xUnit v3",
+      "body": "v2 is in maintenance now and v3 has been out for a while. Can we upgrade? Might speed the tests up as well.",
+      "labels": []
+    },
+    {
+      "id": "MI-12",
+      "title": "add employment type to the member record",
+      "body": "Employers keep sending a PT/FT column on the member file. Can we add EmploymentType to MemberRecord so we stop rejecting those files? I had a go at editing MemberRecord.g.cs but then a test failed and I gave up.",
+      "labels": []
+    },
+    {
+      "id": "MI-13",
+      "title": "rows read doesnt match the employer's count",
+      "body": "E90002 say they sent 412 members and our report says Rows read: 410. Which is right? They are quite cross about it.",
+      "labels": []
+    },
+    {
+      "id": "MI-14",
+      "title": "nightly job started an hour late on Sunday",
+      "body": "The 02:00 job started at 03:00 on Sunday 25 October. Nothing failed but the files were an hour late into the member store. Is that a bug in the job?",
+      "labels": []
+    },
+    {
+      "id": "MI-15",
+      "title": "rotate the dev audit key and move it to user secrets",
+      "body": "appsettings.Development.json has the dev audit service key in it with a TODO to move it to user secrets. It has been in git since the spring, so it needs rotating as well as moving. I dont have access to the audit service so I cant get a new one. Can whoever does rotate it, then take it out of the file before the security review?",
+      "labels": []
+    }
+  ]
+}
